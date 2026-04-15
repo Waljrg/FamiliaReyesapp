@@ -1,0 +1,96 @@
+{
+  "id": "com.fr.tradicion.v1",
+  "name": "FR: Fe, Tradición y Honor",
+  "short_name": "FR App",
+  "description": "Plataforma de alta alcurnia para la gestión de heráldica, registros genealógicos y práctica devocional privada.",
+  "lang": "es-ES",
+  "dir": "ltr",
+  "categories": ["lifestyle", "education", "utilities"],
+  "start_url": "./index.html?mode=pwa_ultra",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "minimal-ui", "browser"],
+  "theme_color": "#1a0026",
+  "background_color": "#1a0026",
+  "orientation": "portrait-primary",
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "icons": [
+    {
+      "src": "images/logo_fr_192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "images/logo_fr_maskable.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    },
+    {
+      "src": "images/logo_fr_monochrome.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "monochrome"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Árbol Genealógico",
+      "url": "/genealogia",
+      "icons": [{ "src": "icons/tree.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Oratorio Personal",
+      "url": "/devocion",
+      "icons": [{ "src": "icons/cross.png", "sizes": "192x192" }]
+    }
+  ],
+  "share_target": {
+    "action": "/share-processor",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "media",
+          "accept": ["image/jpeg", "image/png", "application/pdf"]
+        }
+      ]
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "/open-tree",
+      "accept": {
+        "application/x-gedcom": [".ged"],
+        "text/plain": [".txt"]
+      }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+fr",
+      "url": "/lookup?query=%s"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/desktop_dark.png",
+      "sizes": "2560x1440",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "screenshots/mobile_dark.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ]
+}
