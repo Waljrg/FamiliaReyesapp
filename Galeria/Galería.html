@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería - Fe, Tradición y Honor</title>
+    <style>
+        /* --- REUTILIZACIÓN DE ESTILOS DE INDEX --- */
+        :root {
+            --color-purpura-base: #5a0078;   
+            --color-purpura-oscuro: #1a0026; 
+            --color-oro-secundario: #D4AF37; 
+            --color-texto-claro: #FFFFFF;
+            --fuente-principal: 'Playfair Display', serif;
+            --fuente-secundaria: 'Poppins', sans-serif;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--fuente-secundaria);
+            background-color: var(--color-purpura-oscuro);
+            color: var(--color-texto-claro);
+            line-height: 1.6;
+            overflow-x: hidden;
+            /* Fondo IDÉNTICO al index */
+            background-image: radial-gradient(circle at center, rgba(120, 0, 160, 0.4) 0%, rgba(26, 0, 38, 1) 80%),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%235a0078' fill-opacity='0.15'%3E%3Cpath d='M40 0c-4.4 0-8 3.6-8 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 2c3.3 0 6 2.7 6 6s-2.7 6-6 6-6-2.7-6-6 2.7-6 6-6zm0 18c-11 0-20 9-20 20s9 20 20 20 20-9 20-20-9-20-20-20zm0 38c-9.9 0-18-8.1-18-18s8.1-18 18-18 18 8.1 18 18-8.1 18-18 18z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* --- ESTILOS DE CABECERA (Adaptados de .hero) --- */
+        .header-galeria {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo-top {
+            width: 50px;
+            height: auto;
+            margin-bottom: 5px;
+            animation: giroElegante 10s infinite linear;
+        }
+
+        @keyframes giroElegante { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+
+        .title-galeria {
+            font-family: var(--fuente-principal);
+            font-size: 1.5rem;
+            letter-spacing: 4px; 
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #8a6d3b 0%, #f7e8ad 25%, #b8860b 50%, #f7e8ad 75%, #8a6d3b 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: goldShine 6s linear infinite;
+        }
+
+        @keyframes goldShine { to { background-position: 200% center; } }
+
+        /* Reutilización del divisor */
+        .divider {
+            width: 90%;
+            max-width: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0 25px 0;
+        }
+
+        .line {
+            flex-grow: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #BF953F, #FCF6BA, #B38728, transparent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* --- BOTÓN VOLVER (Reutilizando .btn-oro) --- */
+        .back-container {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            padding: 10px 20px;
+        }
+
+        .btn-volver {
+            position: relative;
+            display: inline-block;
+            padding: 8px 15px;
+            text-decoration: none;
+            font-family: var(--fuente-principal);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: rgba(90, 0, 120, 0.85); 
+            background: linear-gradient(145deg, #BF953F, #FCF6BA, #B38728, #AA771C);
+            border: 1px solid #8a6d3b;
+            border-radius: 4px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-volver:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+        /* --- DISEÑO ESPECÍFICO DE LA GALERÍA --- */
+        .gallery-container {
+            width: 95%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding-bottom: 40px;
+            display: grid;
+            /* Cuadrícula responsiva: mínimo 100px por foto */
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        @media (min-width: 600px) {
+            .gallery-container { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1 / 1; /* Fotos cuadradas */
+            overflow: hidden;
+            border-radius: 4px;
+            border: 2px solid var(--color-purpura-base);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            border-color: var(--color-oro-secundario);
+            z-index: 2;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Recorta la imagen para llenar el cuadrado */
+            transition: filter 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            filter: brightness(1.1);
+        }
+
+        /* --- VISUALIZADOR (LIGHTBOX) --- */
+        .lightbox {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 80vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid var(--color-oro-secundario);
+            border-radius: 4px;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            background-color: var(--color-purpura-oscuro);
+        }
+
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 2px;
+        }
+
+        /* Botones de navegación y cierre del Lightbox */
+        .close-lightbox, .prev-btn, .next-btn {
+            position: absolute;
+            background: none;
+            border: none;
+            color: var(--color-oro-secundario);
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 2010;
+            text-shadow: 0 0 10px rgba(0,0,0,1);
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        .close-lightbox:hover, .prev-btn:hover, .next-btn:hover {
+            color: var(--color-texto-claro);
+            transform: scale(1.1);
+        }
+
+        .close-lightbox { top: -40px; right: 0; font-size: 2.5rem; }
+        .prev-btn { left: -40px; top: 50%; transform: translateY(-50%); }
+        .next-btn { right: -40px; top: 50%; transform: translateY(-50%); }
+
+        /* Ocultar flechas en móviles si tocan la imagen */
+        @media (max-width: 600px) {
+            .prev-btn { left: 10px; }
+            .next-btn { right: 10px; }
+            .close-lightbox { right: 10px; top: 10px; }
+            .lightbox-content { border: none; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="back-container">
+        <a href="../index.html" class="btn-volver">← Volver</a>
+    </nav>
+
+    <header class="header-galeria">
+        <img src="../images/logo_fr.png" alt="" class="logo-top">
+        <div class="title-galeria">Galería</div>
+        
+        <div class="divider">
+            <div class="line"></div>
+            <div class="corona" style="width:25px; height:25px; display:flex; align-items:center;">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="fill:none; stroke:#D4AF37; stroke-width:1.5;">
+                    <path d="M2 17h20L22 7l-5 5-5-10-5 10-5-5z" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 21h16" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="line"></div>
+        </div>
+    </header>
+
+    <main class="gallery-container" id="galleryGrid">
+        </main>
+
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <button class="close-lightbox" id="closeLightbox">&times;</button>
+            <button class="prev-btn" id="prevBtn">&#10094;</button>
+            <img src="" alt="En grande" class="lightbox-img" id="lightboxImg">
+            <button class="next-btn" id="nextBtn">&#10095;</button>
+        </div>
+    </div>
+
+    <script>
+        /* =============================================
+           CONFIGURACIÓN DE LA GALERÍA
+           ============================================= */
+        
+        // Coloca aquí los nombres de tus fotos tal cual aparecen en tu carpeta.
+        // Asegúrate de incluir la extensión (.jpg, .png, etc.)
+        const fotos = [
+            'foto1.jpg',
+            'foto2.jpg',
+            'foto3.jpg',
+            'foto4.jpg',
+            'foto5.jpg',
+            'foto6.jpg',
+            'foto7.jpg',
+            'foto8.jpg',
+            'foto9.jpg',
+            'foto10.jpg',
+            '../images/fr.png' 
+        ];
+
+        /* =============================================
+           LÓGICA DE LA GALERÍA (No tocar)
+           ============================================= */
+        
+        const grid = document.getElementById('galleryGrid');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const closeBtn = document.getElementById('closeLightbox');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        let currentIndex = 0;
+
+        // Generar la cuadrícula
+        function inicializarGaleria() {
+            // Limpiar contenido previo
+            grid.innerHTML = '';
+            
+            if (fotos.length === 0) {
+                grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: var(--color-oro-secundario);">No se han encontrado fotos en la lista.</p>';
+                return;
+            }
+
+            fotos.forEach((foto, index) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                // Usamos onerror para manejar imágenes no encontradas
+                item.innerHTML = `<img src="${foto}" alt="Foto ${index + 1}" loading="lazy" onerror="this.src='https://via.placeholder.com/150?text=Error+Carga'">`;
+                
+                item.addEventListener('click', () => abrirLightbox(index));
+                grid.appendChild(item);
+            });
+        }
+
+        // Lógica del Lightbox
+        function abrirLightbox(index) {
+            currentIndex = index;
+            actualizarImagenLightbox();
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden'; 
+        }
+
+        function cerrarLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function actualizarImagenLightbox() {
+            lightboxImg.style.opacity = '0';
+            setTimeout(() => {
+                lightboxImg.src = fotos[currentIndex];
+                lightboxImg.style.opacity = '1';
+            }, 100);
+        }
+
+        function fotoSiguiente() {
+            currentIndex = (currentIndex + 1) % fotos.length;
+            actualizarImagenLightbox();
+        }
+
+        function fotoAnterior() {
+            currentIndex = (currentIndex - 1 + fotos.length) % fotos.length;
+            actualizarImagenLightbox();
+        }
+
+        // Event Listeners
+        closeBtn.addEventListener('click', cerrarLightbox);
+        nextBtn.addEventListener('click', (e) => { e.stopPropagation(); fotoSiguiente(); });
+        prevBtn.addEventListener('click', (e) => { e.stopPropagation(); fotoAnterior(); });
+        lightbox.addEventListener('click', cerrarLightbox); 
+        lightboxImg.addEventListener('click', (e) => e.stopPropagation()); 
+
+        // Navegación por teclado
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
+            if (e.key === 'Escape') cerrarLightbox();
+            if (e.key === 'ArrowRight') fotoSiguiente();
+            if (e.key === 'ArrowLeft') fotoAnterior();
+        });
+
+        // Iniciar
+        inicializarGaleria();
+
+    </script>
+</body>
+</html>
+
