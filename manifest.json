@@ -1,7 +1,7 @@
 {
   "id": "com.fr.tradicion.v1",
-  "name": "FR: Fe, Tradición y Honor",
-  "short_name": "FR App",
+  "name": "Familia Reyes",
+  "short_name": "F Reyes",
   "description": "Plataforma de alta alcurnia para la gestión de heráldica, registros genealógicos y práctica devocional privada.",
   "lang": "es-ES",
   "dir": "ltr",
@@ -38,14 +38,16 @@
   ],
   "shortcuts": [
     {
-      "name": "Árbol Genealógico",
-      "url": "/genealogia",
-      "icons": [{ "src": "icons/tree.png", "sizes": "192x192" }]
+      "name": "Rezar el Rosario",
+      "short_name": "Rosario",
+      "description": "Acceso directo al cancionero",
+      "url": "Rosario/Rosario.html",
+      "icons": [{ "src": "images/Rosario.png", "sizes": "192x192" }]
     },
     {
       "name": "Oratorio Personal",
       "url": "/devocion",
-      "icons": [{ "src": "icons/cross.png", "sizes": "192x192" }]
+      "icons": [{ "src": "icons/logo_fr.png", "sizes": "192x192" }]
     }
   ],
   "share_target": {
