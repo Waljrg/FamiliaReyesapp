@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Oraciones - Fe, Tradición y Honor</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a0026">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        purpura: {
+                            base: '#5a0078',
+                            oscuro: '#1a0026',
+                        },
+                        oro: {
+                            base: '#D4AF37',
+                            brillante: '#FCF6BA',
+                            oscuro: '#8a6d3b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none;
+            background-color: #1a0026;
+            background-image: radial-gradient(circle at center, rgba(120, 0, 160, 0.2) 0%, rgba(26, 0, 38, 1) 100%);
+        }
+        
+        .view {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .view.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .btn-oro-custom {
+            position: relative;
+            text-decoration: none;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: rgba(90, 0, 120, 0.85); 
+            text-shadow: 1px 1px 1px rgba(255,255,255,0.3);
+            background: linear-gradient(145deg, #BF953F, #FCF6BA, #B38728, #AA771C);
+            border: 1px solid #8a6d3b;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .btn-oro-custom:active {
+            transform: scale(0.95);
+            filter: brightness(1.2);
+        }
+
+        .gold-text {
+            background: linear-gradient(90deg, #8a6d3b 0%, #f7e8ad 25%, #b8860b 50%, #f7e8ad 75%, #8a6d3b 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: goldShine 6s linear infinite;
+        }
+
+        @keyframes goldShine { to { background-position: 200% center; } }
+
+        .card-oracion {
+            background: rgba(90, 0, 120, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .divider-oro {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #BF953F, #FCF6BA, #B38728, transparent);
+        }
+
+        .cat-icon-svg {
+            width: 32px;
+            height: 32px;
+            stroke: currentColor;
+            fill: none;
+        }
+
+        /* Quill Customization */
+        #editor-container {
+            height: 300px;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        .ql-toolbar.ql-snow {
+            background: #eee;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .ql-editor.ql-blank::before { color: rgba(255,255,255,0.3) !important; }
+
+        /* Modal Style */
+        .modal-overlay {
+            background: rgba(26, 0, 38, 0.8);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="text-white antialiased">
+
+    <div class="max-w-md mx-auto min-h-screen relative overflow-hidden flex flex-col">
+
+        <div id="view-categories" class="view active flex-grow">
+            <header class="p-8 pt-12 text-center">
+                <img src="logo_fr.png" alt="Logo" class="w-20 mx-auto mb-4 drop-shadow-lg">
+                <h1 onclick="showEditorView()" class="text-4xl font-serif gold-text font-bold cursor-pointer hover:opacity-80 transition-opacity">Devocionario</h1>
+                <p class="text-xs uppercase tracking-[0.4em] text-oro-base font-semibold mt-2">FAMILIA REYES</p>
+                <div class="divider-oro mt-6 w-3/4 mx-auto"></div>
+            </header>
+
+            <div class="p-6 grid grid-cols-2 gap-4 pb-12" id="categories-grid"></div>
+        </div>
+
+        <div id="view-list" class="view flex-grow">
+            <header class="sticky top-0 bg-purpura-oscuro/95 backdrop-blur-md p-4 border-b border-oro-oscuro/30 flex items-center z-20">
+                <button onclick="showCategoriesView()" class="p-2 rounded-full text-oro-base hover:bg-purpura-base/30 mr-2 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                </button>
+                <h2 id="current-category-title" class="text-lg font-serif font-bold text-oro-base uppercase tracking-widest">Categoría</h2>
+            </header>
+            <div id="oraciones-list-container" class="p-6 space-y-6 pb-20"></div>
+        </div>
+
+        <div id="view-editor" class="view flex-grow">
+            <header class="p-4 border-b border-oro-oscuro/30 flex items-center bg-purpura-oscuro/95">
+                <button onclick="showCategoriesView()" class="p-2 rounded-full text-oro-base mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                </button>
+                <h2 class="text-lg font-serif font-bold text-oro-base uppercase">Nueva Oración</h2>
+            </header>
+            
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="text-[10px] uppercase tracking-widest text-oro-base font-bold ml-1">Título de la Oración</label>
+                    <input type="text" id="editor-titulo" placeholder="Ej: Ave María..." 
+                           class="w-full bg-white/5 border border-oro-base/30 rounded-xl p-3 mt-1 focus:outline-none focus:border-oro-base text-white font-serif">
+                </div>
+                
+                <div>
+                    <label class="text-[10px] uppercase tracking-widest text-oro-base font-bold ml-1">Contenido</label>
+                    <div id="editor-container" class="mt-1"></div>
+                </div>
+
+                <button onclick="openCategoryModal()" class="btn-oro-custom w-full py-4 rounded-xl mt-4 shadow-lg uppercase tracking-widest text-sm">
+                    Guardar Oración
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="modal-category" class="fixed inset-0 z-[100] hidden items-center justify-center p-6 modal-overlay">
+        <div class="bg-purpura-oscuro border border-oro-base/50 w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl">
+            <div class="p-6 border-b border-oro-base/20 bg-purpura-base/20">
+                <h3 class="text-oro-base font-serif text-xl text-center font-bold uppercase tracking-wider">Seleccionar Categoría</h3>
+            </div>
+            <div class="max-h-[60vh] overflow-y-auto p-4 grid grid-cols-1 gap-2" id="modal-cat-list">
+                </div>
+            <div class="p-4 bg-black/20 text-center">
+                <button onclick="closeCategoryModal()" class="text-white/50 text-xs uppercase tracking-widest font-bold">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+    <script>
+        let quill;
+        const database = {
+            categories: [
+                { id: 'manana', name: 'Mañana', icon: `<svg class="cat-icon-svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M3 12h2.25m.386-6.364l1.591 1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M18.75 12a6.75 6.75 0 11-13.5 0 6.75 6.75 0 0113.5 0z" /></svg>`, color: 'text-amber-200 border-amber-500/30' },
+                { id: 'tarde', name: 'Tarde', icon: `<svg class="cat-icon-svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.174L3 12l1.26 1.826C4.53 14.222 5 14.838 5 15.485V18a1 1 0 001 1h2.515c.647 0 1.263.47 1.659.74L12 21l1.826-1.26c.396-.27 1.012-.74 1.659-.74H18a1 1 0 001-1v-2.515c0-.647.47-1.263.74-1.659L21 12l-1.26-1.826C19.47 9.778 19 9.162 19 8.515V6a1 1 0 00-1-1h-2.515c-.647 0-1.263-.47-1.659-.74L12 3l-1.826 1.26C9.778 4.53 9.162 5 8.515 5H6a1 1 0 00-1 1v2.515c0 .647-.47 1.263-.74 1.659z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`, color: 'text-orange-200 border-orange-500/30' },
+                { id: 'noche', name: 'Noche', icon: `<svg class="cat-icon-svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>`, color: 'text-indigo-200 border-indigo-500/30' },
+                { id: 'trinidad', name: 'Santísima Trinidad', icon: `<svg class="cat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z" /><path d="M12 6v12M8 10l8 4M8 14l8-4" /></svg>`, color: 'text-blue-200 border-blue-500/30' },
+                { id: 'padre', name: 'Padre', icon: `<svg class="cat-icon-svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" /></svg>`, color: 'text-stone-200 border-stone-500/30' },
+                { id: 'jesus', name: 'Jesús', icon: `<svg class="cat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M8 9h8" /></svg>`, color: 'text-red-200 border-red-500/30' },
+                { id: 'espiritu', name: 'Espíritu Santo', icon: `<svg class="cat-icon-svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>`, color: 'text-cyan-200 border-cyan-500/30' },
+                { id: 'sacramento', name: 'Santísimo Sacramento', icon: `<svg class="cat-icon-svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.180 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" /></svg>`, color: 'text-yellow-200 border-yellow-500/30' },
+                { id: 'misericordia', name: 'Divina Misericordia', icon: `<svg class="cat-icon-svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" /></svg>`, color: 'text-red-200 border-red-400/30' },
+                { id: 'maria', name: 'Virgen María', icon: `<svg class="cat-icon-svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21l-8.25-1.875V15.75c0-1.242.822-2.317 2.036-2.622l4.814-1.203a3 3 0 002.8 0l4.814 1.203c1.214.305 2.036 1.38 2.036 2.622V19.125L12 21zm0-10.5a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" /></svg>`, color: 'text-blue-200 border-blue-400/30' },
+                { id: 'latin', name: 'Latín', icon: `<svg class="cat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21l-9-5V8l9-5 9 5v8l-9 5z" /><path d="M12 21V12" /></svg>`, color: 'text-gray-300 border-gray-400/30' },
+                { id: 'otras', name: 'Otras', icon: `<svg class="cat-icon-svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>`, color: 'text-slate-300 border-slate-400/30' }
+            ],
+            oraciones: [
+                { cat: 'latin', titulo: "Pater Noster", texto: "Pater noster, qui es in caelis, sanctificetur nomen tuum..." },
+                { cat: 'jesus', titulo: "Anima Christi", texto: "Alma de Cristo, santifícame. Cuerpo de Cristo, sálvame..." }
+            ]
+        };
+
+        const viewCategories = document.getElementById('view-categories');
+        const viewList = document.getElementById('view-list');
+        const viewEditor = document.getElementById('view-editor');
+        const categoriesGrid = document.getElementById('categories-grid');
+        const oracionesContainer = document.getElementById('oraciones-list-container');
+        const categoryTitle = document.getElementById('current-category-title');
+        const modal = document.getElementById('modal-category');
+
+        // Inicializar Quill
+        function initQuill() {
+            if(!quill) {
+                quill = new Quill('#editor-container', {
+                    modules: {
+                        toolbar: [
+                            ['bold', 'italic', 'underline'],
+                            [{ 'color': [] }, { 'background': [] }],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            ['clean']
+                        ]
+                    },
+                    placeholder: 'Escribe la oración aquí...',
+                    theme: 'snow'
+                });
+            }
+        }
+
+        function showCategoriesView() {
+            viewList.classList.remove('active');
+            viewEditor.classList.remove('active');
+            viewCategories.classList.add('active');
+        }
+
+        function showEditorView() {
+            viewCategories.classList.remove('active');
+            viewList.classList.remove('active');
+            viewEditor.classList.add('active');
+            initQuill();
+        }
+
+        function renderCategories() {
+            categoriesGrid.innerHTML = '';
+            database.categories.forEach(cat => {
+                const card = `
+                    <button onclick="showOracionesView('${cat.id}')" 
+                            class="btn-oro-custom flex flex-col items-center justify-center text-center p-5 rounded-xl transition-all duration-300">
+                        <div class="mb-2 drop-shadow-md text-purpura-oscuro">${cat.icon}</div>
+                        <h3 class="font-serif font-bold text-xs leading-tight uppercase tracking-tighter">${cat.name}</h3>
+                        <p class="text-[9px] uppercase tracking-widest text-purpura-base opacity-70 mt-2 font-bold">${countOraciones(cat.id)} items</p>
+                    </button>
+                `;
+                categoriesGrid.innerHTML += card;
+            });
+        }
+
+        function countOraciones(catId) {
+            return database.oraciones.filter(o => o.cat === catId).length;
+        }
+
+        function showOracionesView(catId) {
+            const category = database.categories.find(c => c.id === catId);
+            if (!category) return;
+            categoryTitle.innerText = category.name;
+            oracionesContainer.innerHTML = '';
+            const filtradas = database.oraciones.filter(o => o.cat === catId);
+            if (filtradas.length === 0) {
+                oracionesContainer.innerHTML = `<div class="text-center py-20"><div class="text-6xl mb-4 opacity-20 flex justify-center text-oro-base">${category.icon}</div><p class="text-oro-base/50 font-serif italic">Sin oraciones.</p></div>`;
+            } else {
+                filtradas.forEach(ora => {
+                    oracionesContainer.innerHTML += `
+                        <div class="card-oracion p-6 rounded-2xl shadow-2xl border border-oro-oscuro/20">
+                            <h3 class="text-xl font-serif font-bold text-oro-base mb-4 drop-shadow-sm">${ora.titulo}</h3>
+                            <div class="text-gray-200 leading-relaxed font-light italic">${ora.texto}</div>
+                        </div>
+                    `;
+                });
+            }
+            viewCategories.classList.remove('active');
+            viewList.classList.add('active');
+        }
+
+        // Modal Logic
+        function openCategoryModal() {
+            const titulo = document.getElementById('editor-titulo').value;
+            if(!titulo) return alert("Por favor pon un título");
+            
+            const list = document.getElementById('modal-cat-list');
+            list.innerHTML = '';
+            database.categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = "flex items-center space-x-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-oro-base/20 hover:border-oro-base transition-all group";
+                btn.onclick = () => saveOracion(cat.id);
+                btn.innerHTML = `
+                    <div class="text-oro-base opacity-70 group-hover:opacity-100">${cat.icon}</div>
+                    <span class="font-serif text-white uppercase tracking-widest text-sm">${cat.name}</span>
+                `;
+                list.appendChild(btn);
+            });
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeCategoryModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function saveOracion(catId) {
+            const titulo = document.getElementById('editor-titulo').value;
+            const contenido = quill.root.innerHTML;
+            
+            database.oraciones.push({
+                cat: catId,
+                titulo: titulo,
+                texto: contenido
+            });
+
+            // Limpiar y volver
+            document.getElementById('editor-titulo').value = '';
+            quill.setContents([]);
+            closeCategoryModal();
+            renderCategories();
+            showCategoriesView();
+        }
+
+        renderCategories();
+    </script>
+</body>
+</html>
+
