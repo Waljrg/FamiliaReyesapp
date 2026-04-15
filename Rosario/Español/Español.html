@@ -298,6 +298,22 @@
             transform: translateX(-50%);
             z-index: 2;
             filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8));
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cristo-central:active { transform: translateX(-50%) scale(0.9); }
+        
+        /* Efecto cuando el micrófono está escuchando */
+        .escuchando {
+            filter: drop-shadow(0 0 15px #FCF6BA) drop-shadow(0 5px 15px rgba(0,0,0,0.8)) !important;
+            animation: pulse-gold 1.5s infinite;
+        }
+
+        @keyframes pulse-gold {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.1); }
+            100% { transform: translateX(-50%) scale(1); }
         }
 
         /* ANIMACIÓN DE BRILLO PARA LA CRUZ */
@@ -352,7 +368,7 @@
         @keyframes waveAnimateFront {
             0% { transform: translateX(-15%); }
             100% { transform: translateX(-65%); }
-        }vv
+        }
         @keyframes waveAnimateBack {
             0% { transform: translateX(-30%); }
             100% { transform: translateX(-80%); }
@@ -703,7 +719,7 @@
                 </svg>
             </div>
             
-            <div class="cristo-central">
+            <div class="cristo-central" id="cruz-voz" onclick="toggleEscuchaVoz()">
                 <svg viewBox="0 0 100 130">
                     <defs>
                         <radialGradient id="ray-grad" cx="50%" cy="40%" r="50%" fx="50%" fy="40%">
@@ -729,8 +745,6 @@
                 </svg>
             </div>
 
-<!-- === RECTÁNGULO DORADO DEL CORAZÓN CON OLA SUAVE === -->
-<!-- === CORAZÓN PROGRESO - SOLO BARRA DE ORO (sin olas) === -->
 <div class="corazon-progreso-container">
     <svg viewBox="0 0 100 100" preserveAspectRatio="none" id="heart-svg">
         <defs>
@@ -748,10 +762,8 @@
         </defs>
         
         <g mask="url(#heart-mask)">
-            <!-- Fondo sutil del corazón -->
             <rect x="0" y="0" width="100" height="100" fill="rgba(212,175,55,0.08)" />
             
-            <!-- BARRA DE ORO - Única que debe verse -->
             <rect id="golden-fill" 
                   x="0" 
                   y="100" 
@@ -761,7 +773,6 @@
                   opacity="0.98" />
         </g>
         
-        <!-- Borde dorado del corazón -->
         <path d="M50,88 C50,88 15,65 15,38 C15,22 28,12 42,12 C45,12 48,13 50,15 C52,13 55,12 58,12 C72,12 85,22 85,38 C85,65 50,88 50,88 Z" 
               fill="none" 
               stroke="#D4AF37" 
@@ -774,7 +785,6 @@
     </div>
 
     <div class="progreso-bar" id="progreso" style="display: none;"></div>
-<!-- MODAL DE CONTINUAR ORACIÓN - Diseño elegante -->
 <div id="modal-continuar" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 2000; justify-content: center; align-items: center;">
     <div class="modal-content" style="background: linear-gradient(135deg, #2a0038 0%, #1a0026 100%); border: 2px solid #D4AF37; border-radius: 20px; max-width: 380px; width: 90%; padding: 25px; text-align: center; box-shadow: 0 15px 40px rgba(212,175,55,0.3);">
         
@@ -808,15 +818,12 @@
         </div>
     </div>
 </div>
-<!-- MODAL FINAL - COMPLETADO EL ROSARIO -->
 <div id="modal-final" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(26, 0, 38, 0.98); z-index: 3000; justify-content: center; align-items: center; overflow-y: auto;">
     <div style="max-width: 420px; width: 92%; text-align: center; padding: 30px 20px;">
         
-        <!-- Ramo de Flores SVG Grande y Bonito -->
         <div style="margin-bottom: 25px; filter: drop-shadow(0 10px 25px rgba(212, 175, 55, 0.6));">
             <svg id="ramo-flores" width="180" height="180" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                <!-- Este SVG se llenará con JavaScript para que sea más bonito -->
-            </svg>
+                </svg>
         </div>
 
         <h1 style="font-family: 'Playfair Display', serif; font-size: 2.1rem; background: var(--oro-puro); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; line-height: 1.1;">
@@ -885,13 +892,11 @@ const SVG_JAZPE = `
         </defs>
         <circle cx="50" cy="50" r="40" fill="url(#rgrad-oro-bead)" stroke="#6d4c00" stroke-width="4" />
         
-        <!-- Brillo que barre (efecto luz pasando) -->
         <g mask="url(#bead-mask-jazpe)">
             <ellipse class="bead-shine-element" cx="50" cy="50" rx="12" ry="55" fill="url(#shine-grad-bead)" 
                      transform="rotate(35 50 50)" />
         </g>
         
-        <!-- Detalle decorativo sutil -->
         <path d="M35,35 Q50,18 65,35" fill="none" stroke="#fff" stroke-width="3" opacity="0.45" />
     </svg>`;
 
@@ -916,15 +921,71 @@ const SVG_ROSA = `
         </defs>
         <circle cx="50" cy="50" r="38" fill="url(#rgrad-rosa-bead)" stroke="#5e3a40" stroke-width="4" />
         
-        <!-- Brillo que barre - MISMO efecto que en las cuentas doradas -->
         <g mask="url(#bead-mask-rosa)">
             <ellipse class="bead-shine-element" cx="50" cy="50" rx="12" ry="52" fill="url(#shine-grad-bead-rosa)" 
                      transform="rotate(35 50 50)" />
         </g>
         
-        <!-- Detalle decorativo suave en rosa -->
         <path d="M50,22 C62,22 73,33 50,48 C30,33 40,22 50,22" fill="#fff" opacity="0.35" />
     </svg>`;
+
+        // LÓGICA DE RECONOCIMIENTO DE VOZ
+        let recognition = null;
+        let estaEscuchando = false;
+
+        function initVoz() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                console.log("Reconocimiento de voz no soportado");
+                return;
+            }
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'es-ES';
+            recognition.continuous = true;
+            recognition.interimResults = true;
+
+            recognition.onresult = (event) => {
+                const transcript = Array.from(event.results)
+                    .map(result => result[0])
+                    .map(result => result.transcript)
+                    .join('')
+                    .toLowerCase();
+
+                const textoActual = pasos[indiceActual].texto.toLowerCase().replace(/[.,!¡?¿]/g, "");
+                const palabrasActuales = textoActual.split(" ").filter(p => p.length > 3);
+                const palabrasFinales = palabrasActuales.slice(-4); // Tomamos las últimas 4 palabras clave
+
+                // Si se escuchan las palabras finales o un fragmento largo, avanzar
+                const detectado = palabrasFinales.some(palabra => transcript.includes(palabra));
+                
+                if (detectado) {
+                    navegar(1);
+                    // Pequeña pausa para no saltar varios de golpe
+                    recognition.stop();
+                    setTimeout(() => { if(estaEscuchando) recognition.start(); }, 1000);
+                }
+            };
+
+            recognition.onend = () => {
+                if (estaEscuchando) recognition.start();
+            };
+        }
+
+        function toggleEscuchaVoz() {
+            const cruz = document.getElementById('cruz-voz');
+            if (!recognition) initVoz();
+            if (!recognition) return;
+
+            if (!estaEscuchando) {
+                recognition.start();
+                estaEscuchando = true;
+                cruz.classList.add('escuchando');
+            } else {
+                recognition.stop();
+                estaEscuchando = false;
+                cruz.classList.remove('escuchando');
+            }
+        }
 
         function toggleMusica() {
             if (!reproduciendo) {
@@ -1261,8 +1322,6 @@ dataOraciones.cierre.forEach((item, i) => {
             } catch (error) { console.error("Error:", error); }
         }
 
-    // ... (todo el código anterior se mantiene igual hasta la función actualizarUI)
-
     async function actualizarUI() {
         if (pasos.length === 0) return;
         const hora = new Date().getHours();
@@ -1319,27 +1378,8 @@ const totalPasos = pasos.length;
             goldenRect.setAttribute('height', fillHeight.toString());
         }
 
-        // === ACTUALIZAR OLA SUAVE ===
-        const waveY = yStart;
-        const waves = ['wave-back', 'wave-mid', 'wave-front'];
-        
-        waves.forEach(id => {
-            const wave = document.getElementById(id);
-            if (wave) {
-                // Ola suave y ondulada que sigue el nivel del progreso
-                const d = `M 0,${waveY} 
-                           Q 12.5,\( {waveY - 4} 25, \){waveY} 
-                           T 50,${waveY} 
-                           T 75,${waveY} 
-                           T 100,${waveY} 
-                           L 100,100 L 0,100 Z`;
-                wave.setAttribute('d', d);
-            }
-        });
         guardarProgreso();
     }
-
-    // ... (el resto del script se mantiene exactamente igual)
 
         function navegar(delta) {
             let nuevoIndice = indiceActual + delta;
@@ -1350,10 +1390,6 @@ if (nuevoIndice >= pasos.length) {
     indiceActual = 0;           // reiniciamos para la próxima vez
     guardarProgreso();
     return;
-                indiceActual = 0;
-                guardarProgreso();
-                cargarRosario();
-                return;
             }
             indiceActual = nuevoIndice;
             actualizarUI();
@@ -1367,40 +1403,32 @@ function mostrarModalFinal() {
     // SVG de ramo de flores hermoso (rosas, lirios y brillo)
     svgContainer.innerHTML = `
         <g>
-            <!-- Fondo suave -->
             <circle cx="100" cy="100" r="85" fill="none" stroke="#D4AF37" stroke-width="8" stroke-opacity="0.15"/>
             
-            <!-- Rosas y flores principales -->
             <path d="M65 75 Q50 45 80 35 Q95 55 85 80 Z" fill="#ff99cc"/>
             <path d="M130 70 Q155 40 175 60 Q150 85 135 75 Z" fill="#ff77aa"/>
             <path d="M85 120 Q60 145 45 125 Q70 105 90 115 Z" fill="#ff6699"/>
             <path d="M120 125 Q145 150 165 130 Q140 110 115 120 Z" fill="#ff88bb"/>
             
-            <!-- Centro de las flores -->
             <circle cx="72" cy="58" r="12" fill="#ffe066"/>
             <circle cx="145" cy="62" r="11" fill="#ffe066"/>
             <circle cx="65" cy="125" r="10" fill="#ffe066"/>
             <circle cx="145" cy="128" r="11" fill="#ffe066"/>
             
-            <!-- Lirios blancos con toque dorado -->
             <path d="M95 40 Q88 20 105 25" fill="none" stroke="#f8f1d9" stroke-width="18" stroke-linecap="round"/>
             <path d="M105 38 Q118 18 130 28" fill="none" stroke="#f8f1d9" stroke-width="16" stroke-linecap="round"/>
             
-            <!-- Hojas verdes suaves -->
             <path d="M55 90 Q35 75 45 55" fill="none" stroke="#8fbc8f" stroke-width="14" stroke-linecap="round" opacity="0.7"/>
             <path d="M145 95 Q170 78 155 55" fill="none" stroke="#8fbc8f" stroke-width="13" stroke-linecap="round" opacity="0.7"/>
             
-            <!-- Brillo dorado suave -->
             <circle cx="100" cy="100" r="45" fill="none" stroke="#FCF6BA" stroke-width="25" stroke-opacity="0.25"/>
             
-            <!-- Pequeñas flores decorativas -->
             <circle cx="45" cy="85" r="6" fill="#ffccdd"/>
             <circle cx="160" cy="85" r="5" fill="#ffccdd"/>
             <circle cx="80" cy="155" r="7" fill="#ffbbcc"/>
             <circle cx="125" cy="45" r="4" fill="#ffbbcc"/>
         </g>
         
-        <!-- Animación de brillo suave -->
         <animate attributeName="opacity" values="0.85;1;0.85" dur="4s" repeatCount="indefinite"/>
     `;
 
