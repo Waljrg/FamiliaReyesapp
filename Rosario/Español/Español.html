@@ -656,7 +656,7 @@
     </script>
 
     <header>
-        <img src="Imagenes/NSVMDLM.png" alt="Logo Izquierda" class="header-logo" onclick="abrirOracionesPersonales()">
+<img src="Imagenes/NSVMDLM.png" alt="Logo Izquierda" class="header-logo" onclick="abrirModalVoz()">
         <h1 onclick="toggleMenu()">Santo Rosario</h1>
         <img src="Imagenes/M.png" id="logo-musica" alt="Logo Derecha" class="header-logo" style="cursor:pointer;" onclick="toggleMusica()">
         
@@ -668,29 +668,44 @@
         </div>
     </header>
 
-    <div id="modal-oraciones">
-        <div class="modal-content">
-            <span class="btn-cerrar" onclick="cerrarOracionesPersonales()" style="position: absolute; top: 10px; right: 15px; color: var(--color-oro-secundario); font-size: 24px; cursor: pointer;">&times;</span>
-            
-            <div class="modal-header">
-                <h2>Mis Oraciones Personales</h2>
-            </div>
-
-            <div class="lista-personales" id="lista-personales"></div>
-
-            <div id="btn-abrir-formulario" onclick="toggleFormulario(true)">+</div>
-
-            <div id="form-nueva-oracion">
-                <h2 style="font-family: var(--fuente-principal); color: var(--color-oro-secundario); margin-bottom: 20px;">Nueva Oración</h2>
-                <input type="text" id="input-titulo" placeholder="Título de la oración">
-                <textarea id="input-texto" rows="8" placeholder="Escribe aquí tus intenciones..."></textarea>
-                <div class="btn-grupo" style="display:flex; gap:10px; justify-content:flex-end;">
-                    <button class="btn-accion btn-cancelar" onclick="toggleFormulario(false)">Cancelar</button>
-                    <button class="btn-accion btn-guardar" onclick="guardarOracionPersonal()">Guardar</button>
-                </div>
-            </div>
+<div id="modal-oraciones">
+    <div class="modal-content" style="max-width: 480px; height: auto;
+    max-height: 85vh;">
+        <span onclick="cerrarModalVoz()" 
+              style="position: absolute; top: 15px; right: 20px; color: var(--color-oro-secundario); font-size: 28px; cursor: pointer; z-index: 10;">&times;</span>
+        
+        <div class="modal-header">
+            <h2 style="font-family: var(--fuente-principal); background: var(--oro-puro); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                🎤 Comandos de Voz
+            </h2>
+            <p style="text-align: center; opacity: 0.85; margin: 8px 0 20px; font-size: 0.95rem;">
+                Di cualquiera de estas palabras para avanzar en el Rosario
+            </p>
         </div>
+
+        <div id="lista-triggers" style="max-height: 320px; overflow-y: auto; padding-right: 8px; margin-bottom: 20px;"></div>
+        
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="nuevo-trigger" 
+                   placeholder="Ej: amén, gloria, siguiente, vamos, santo..." 
+                   style="flex: 1; background: rgba(255,255,255,0.05); border:
+                   1px solid var(--color-oro-secundario); color: white; padding:
+                   1px; border-radius: 50px; font-family:
+                   var(--fuente-secundaria); font-size: 1rem;"></div>
+                   
+           <div  <button onclick="agregarTriggerVoz()" 
+                    style="background: var(--oro-puro); color: #1a0026; border:
+                    none; padding: 1px 1px; border-radius: 50px; font-weight:
+                    bold; cursor: pointer; white-space: nowrap;">
+                Agregar
+            </button>
+        </div>
+        
+        <p style="font-size: 0.82rem; opacity: 0.7; text-align: center; margin-top: 15px;">
+            La cruz dorada debe estar brillando para que el micrófono escuche.
+        </p>
     </div>
+</div>
 
     <div id="app-container">
         <div class="card">
@@ -929,63 +944,139 @@ const SVG_ROSA = `
         <path d="M50,22 C62,22 73,33 50,48 C30,33 40,22 50,22" fill="#fff" opacity="0.35" />
     </svg>`;
 
-        // LÓGICA DE RECONOCIMIENTO DE VOZ
-        let recognition = null;
-        let estaEscuchando = false;
+// ==================== NUEVA LÓGICA DE VOZ MEJORADA (ANTI-SALTOS) ====================
+let voiceTriggers = [];
+let recognition = null;
+let estaEscuchando = false;
+let puedeAvanzar = true;          // ← Nuevo: control anti-saltos
+const TIEMPO_BLOQUEO = 1500;      // 1.5 segundos de bloqueo después de avanzar
 
-        function initVoz() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                console.log("Reconocimiento de voz no soportado");
-                return;
+function cargarTriggersVoz() {
+    voiceTriggers = JSON.parse(localStorage.getItem('voiceTriggers')) || ['amén', 'amen'];
+}
+
+function guardarTriggersVoz() {
+    localStorage.setItem('voiceTriggers', JSON.stringify(voiceTriggers));
+}
+
+function renderizarTriggersVoz() {
+    const container = document.getElementById('lista-triggers');
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (voiceTriggers.length === 0) {
+        container.innerHTML = '<p style="opacity:0.6; font-style:italic; text-align:center; padding:15px;">No hay comandos de voz.<br>Agrega uno abajo 👇</p>';
+        return;
+    }
+
+    voiceTriggers.forEach((trigger, index) => {
+        const div = document.createElement('div');
+        div.style = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:10px 15px; border-radius:8px; margin-bottom:8px;';
+        div.innerHTML = `
+            <span style="color:#f0e6d2; font-size:1.05rem;">${trigger}</span>
+            <span onclick="eliminarTriggerVoz(${index}); event.stopImmediatePropagation();" style="color:#ff4d4d; cursor:pointer; font-size:1.4rem; padding:0 8px;">&times;</span>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function agregarTriggerVoz() {
+    const input = document.getElementById('nuevo-trigger');
+    const nuevo = input.value.trim();
+    if (!nuevo) return;
+
+    if (voiceTriggers.some(t => t.toLowerCase() === nuevo.toLowerCase())) {
+        alert('⚠️ Ese comando ya existe');
+        return;
+    }
+
+    voiceTriggers.push(nuevo);
+    guardarTriggersVoz();
+    renderizarTriggersVoz();
+    input.value = '';
+}
+
+function eliminarTriggerVoz(index) {
+    if (confirm('¿Eliminar este comando de voz?')) {
+        voiceTriggers.splice(index, 1);
+        guardarTriggersVoz();
+        renderizarTriggersVoz();
+    }
+}
+
+function initVoz() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        console.log("❌ Reconocimiento de voz no soportado");
+        return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'es-ES';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onresult = (event) => {
+        if (!puedeAvanzar) return;
+
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+                transcript += event.results[i][0].transcript + ' ';
             }
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.lang = 'es-ES';
-            recognition.continuous = true;
-            recognition.interimResults = true;
-
-            recognition.onresult = (event) => {
-                const transcript = Array.from(event.results)
-                    .map(result => result[0])
-                    .map(result => result.transcript)
-                    .join('')
-                    .toLowerCase();
-
-                const textoActual = pasos[indiceActual].texto.toLowerCase().replace(/[.,!¡?¿]/g, "");
-                const palabrasActuales = textoActual.split(" ").filter(p => p.length > 3);
-                const palabrasFinales = palabrasActuales.slice(-4); // Tomamos las últimas 4 palabras clave
-
-                // Si se escuchan las palabras finales o un fragmento largo, avanzar
-                const detectado = palabrasFinales.some(palabra => transcript.includes(palabra));
-                
-                if (detectado) {
-                    navegar(1);
-                    // Pequeña pausa para no saltar varios de golpe
-                    recognition.stop();
-                    setTimeout(() => { if(estaEscuchando) recognition.start(); }, 1000);
-                }
-            };
-
-            recognition.onend = () => {
-                if (estaEscuchando) recognition.start();
-            };
         }
+        transcript = transcript.toLowerCase().trim();
+        if (!transcript) return;
 
-        function toggleEscuchaVoz() {
-            const cruz = document.getElementById('cruz-voz');
-            if (!recognition) initVoz();
-            if (!recognition) return;
+        // 1. Obtener el final del texto actual para validar
+        const contenedorTexto = document.getElementById('texto-oracion');
+        const textoLimpio = contenedorTexto.innerText.toLowerCase().trim();
+        const palabras = textoLimpio.split(/\s+/);
+        // Tomamos la última palabra del texto (ej: "amén", "nosotros", "padre")
+        const ultimaPalabraDelTexto = palabras[palabras.length - 1].replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
 
-            if (!estaEscuchando) {
-                recognition.start();
-                estaEscuchando = true;
-                cruz.classList.add('escuchando');
-            } else {
+        // 2. Verificar triggers
+        const comandosAvanzar = voiceTriggers.map(t => t.toLowerCase());
+        const detectaComando = comandosAvanzar.some(trigger => transcript.includes(trigger));
+        
+        // 3. Validación: ¿Lo que dijo el usuario incluye la última palabra del rezo actual?
+        const mencionoFinal = transcript.includes(ultimaPalabraDelTexto);
+
+        // Solo avanzamos si detecta el comando (Amén) Y mencionó la última parte del texto
+        if (detectaComando && mencionoFinal) {
+            navegar(1); 
+            
+            // Bloqueo de seguridad para evitar saltos dobles
+            puedeAvanzar = false;
+            setTimeout(() => { puedeAvanzar = true; }, 1500);
+
+            // Reinicio breve del micro para limpiar el buffer
+            if (estaEscuchando) {
                 recognition.stop();
-                estaEscuchando = false;
-                cruz.classList.remove('escuchando');
+                setTimeout(() => { if (estaEscuchando) recognition.start(); }, 600);
             }
         }
+    };
+
+    recognition.onerror = (event) => { console.error('Error de voz:', event.error); };
+    recognition.onend = () => { if (estaEscuchando) recognition.start(); };
+}
+
+
+function toggleEscuchaVoz() {
+    const cruz = document.getElementById('cruz-voz');
+    if (!recognition) initVoz();
+    if (!recognition) return;
+
+    if (!estaEscuchando) {
+        recognition.start();
+        estaEscuchando = true;
+        cruz.classList.add('escuchando');
+    } else {
+        recognition.stop();
+        estaEscuchando = false;
+        cruz.classList.remove('escuchando');
+    }
+}
 
         function toggleMusica() {
             if (!reproduciendo) {
@@ -1000,73 +1091,68 @@ const SVG_ROSA = `
             }
         }
 
-        function abrirOracionesPersonales() {
-            document.getElementById('modal-oraciones').style.display = 'block';
-            renderizarOracionesPersonales();
-        }
+function abrirOracionesPersonales() {
+    document.getElementById('modal-oraciones').style.display = 'block';
+    renderizarOracionesPersonales();
+    renderizarTriggersVoz();   // ← agrega esta línea
+}
 
-        function cerrarOracionesPersonales() {
-            document.getElementById('modal-oraciones').style.display = 'none';
-            toggleFormulario(false);
-        }
+// ==================== FUNCIONES DEL MODAL DE COMANDOS DE VOZ ====================
 
-        function toggleFormulario(show) {
-            document.getElementById('form-nueva-oracion').style.display = show ? 'flex' : 'none';
-            if(show) { document.getElementById('input-titulo').focus(); }
-        }
+function abrirModalVoz() {
+    document.getElementById('modal-oraciones').style.display = 'block';
+    renderizarTriggersVoz();
+}
 
-        function guardarOracionPersonal() {
-            const titulo = document.getElementById('input-titulo').value.trim();
-            const texto = document.getElementById('input-texto').value.trim();
-            if (!titulo || !texto) return;
+function cerrarModalVoz() {
+    document.getElementById('modal-oraciones').style.display = 'none';
+}
 
-            let personales = JSON.parse(localStorage.getItem('oracionesPersonales') || '[]');
-            personales.push({ titulo, texto, id: Date.now() });
-            localStorage.setItem('oracionesPersonales', JSON.stringify(personales));
+function renderizarTriggersVoz() {
+    const container = document.getElementById('lista-triggers');
+    container.innerHTML = '';
 
-            document.getElementById('input-titulo').value = '';
-            document.getElementById('input-texto').value = '';
-            toggleFormulario(false);
-            renderizarOracionesPersonales();
-        }
+    if (voiceTriggers.length === 0) {
+        container.innerHTML = '<p style="opacity:0.6; font-style:italic; text-align:center; padding:40px 20px;">No hay comandos de voz.<br>Agrega uno abajo 👇</p>';
+        return;
+    }
 
-        function borrarOracionPersonal(e, id) {
-            e.stopPropagation();
-            if(!confirm("¿Eliminar esta oración?")) return;
-            let personales = JSON.parse(localStorage.getItem('oracionesPersonales') || '[]');
-            personales = personales.filter(p => p.id !== id);
-            localStorage.setItem('oracionesPersonales', JSON.stringify(personales));
-            renderizarOracionesPersonales();
-        }
+    voiceTriggers.forEach((trigger, index) => {
+        const div = document.createElement('div');
+        div.style = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:12px 16px; border-radius:10px; margin-bottom:8px;';
+        div.innerHTML = `
+            <span style="color:#f0e6d2; font-size:1.05rem;">${trigger}</span>
+            <span onclick="eliminarTriggerVoz(${index}); event.stopImmediatePropagation();" 
+                  style="color:#ff4d4d; cursor:pointer; font-size:1.5rem; padding:0 10px;">&times;</span>
+        `;
+        container.appendChild(div);
+    });
+}
 
-        function toggleAcordeon(elemento) {
-            const padre = elemento.parentElement;
-            const estaAbierto = padre.classList.contains('abierta');
-            document.querySelectorAll('.oracion-acordeon').forEach(item => item.classList.remove('abierta'));
-            if (!estaAbierto) { padre.classList.add('abierta'); }
-        }
+function agregarTriggerVoz() {
+    const input = document.getElementById('nuevo-trigger');
+    const nuevo = input.value.trim();
+    if (!nuevo) return;
 
-        function renderizarOracionesPersonales() {
-            const lista = document.getElementById('lista-personales');
-            const personales = JSON.parse(localStorage.getItem('oracionesPersonales') || '[]');
-            if (personales.length === 0) {
-                lista.innerHTML = '<p style="text-align:center; opacity:0.5; margin-top:50px; font-style:italic;">No has agregado oraciones personales aún.</p>';
-                return;
-            }
-            lista.innerHTML = '';
-            personales.forEach(p => {
-                lista.innerHTML += `
-                    <div class="oracion-acordeon">
-                        <div class="acordeon-titulo" onclick="toggleAcordeon(this)">
-                            <span>${p.titulo}</span>
-                            <span style="color:#ff4d4d; font-size:1.2rem; cursor:pointer;" onclick="borrarOracionPersonal(event, ${p.id})">&times;</span>
-                        </div>
-                        <div class="acordeon-contenido">${p.texto}</div>
-                    </div>
-                `;
-            });
-        }
+    if (voiceTriggers.some(t => t.toLowerCase() === nuevo.toLowerCase())) {
+        alert('⚠️ Ese comando ya existe');
+        return;
+    }
 
+    voiceTriggers.push(nuevo);
+    guardarTriggersVoz();
+    renderizarTriggersVoz();
+    input.value = '';
+    input.focus();
+}
+
+function eliminarTriggerVoz(index) {
+    if (confirm(`¿Eliminar el comando "${voiceTriggers[index]}"?`)) {
+        voiceTriggers.splice(index, 1);
+        guardarTriggersVoz();
+        renderizarTriggersVoz();
+    }
+}
 async function obtenerIntencionPapaReal() {
     const RSS_URL = "https://www.vaticannews.va/es.rss.xml";
     const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
@@ -1453,6 +1539,7 @@ function cerrarModalFinal() {
         });
 
         if (!recuperarProgreso()) { cargarRosario(); }
+cargarTriggersVoz();
     </script>
 </body>
 </html>
