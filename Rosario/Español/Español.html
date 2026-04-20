@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Santo Rosario - Edición Especial</title>
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Colores del Index.html */
+            --color-purpura-base: #5a0078;   
+            --color-purpura-oscuro: #1a0026; 
+            --color-oro-secundario: #D4AF37; 
+            --color-texto-claro: #FFFFFF;
+            
+            /* Gradientes del Index.html */
+            --oro-puro: linear-gradient(145deg, #BF953F, #FCF6BA, #B38728, #AA771C);
+            --oro-solido: #D4AF37;
+            --oro-brillo: #f7e8ad;
+            
+            --sombra: rgba(0, 0, 0, 0.7);
+            --marfil: #fdfaf1;
+            --celeste-letania: #87CEEB;
+            --rojo-liturgico: #ff4d4d;
+            
+            --fuente-principal: 'Playfair Display', serif;
+            --fuente-secundaria: 'Poppins', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--color-purpura-oscuro);
+            color: var(--color-texto-claro);
+            font-family: var(--fuente-secundaria);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at center, rgba(120, 0, 160, 0.2) 0%, rgba(26, 0, 38, 1) 80%);
+        }
+
+        header {
+            width: 100%;
+            padding: 15px 20px;
+            text-align: center;
+            background: linear-gradient(to bottom, #2d0042, var(--color-purpura-oscuro));
+            border-bottom: 2px solid var(--color-oro-secundario);
+            box-shadow: 0 4px 15px var(--sombra);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-logo {
+            height: 45px;
+            width: auto;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .musica-activa {
+            filter: drop-shadow(0 0 8px var(--oro-solido)) brightness(1.2) !important;
+        }
+
+        h1 {
+            font-family: var(--fuente-principal);
+            background: var(--oro-puro);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            margin: 0;
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        h1:active { transform: scale(0.95); }
+
+        #menu-misterios {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--color-purpura-oscuro);
+            border: 2px solid var(--color-oro-secundario);
+            border-radius: 0 0 15px 15px;
+            width: 250px;
+            box-shadow: 0 10px 30px var(--sombra);
+            overflow: hidden;
+        }
+
+        .menu-item {
+            padding: 15px;
+            color: var(--color-texto-claro);
+            font-family: var(--fuente-principal);
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .menu-item:hover { 
+            background: var(--color-purpura-base); 
+            color: var(--oro-brillo); 
+        }
+        .menu-item:last-child { border-bottom: none; }
+
+        #app-container {
+            width: 95%;
+            max-width: 600px;
+            margin-top: 30px;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #2a0038 0%, var(--color-purpura-oscuro) 100%);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            box-shadow: 0 10px 30px var(--sombra);
+            min-height: 350px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .imagen-principal {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+            transition: opacity 0.5s ease;
+        }
+
+        .etiqueta-desplegable {
+            font-family: var(--fuente-principal);
+            background: var(--oro-puro);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background-color: rgba(212, 175, 55, 0.05);
+            border-radius: 5px;
+            border: 1px solid transparent;
+        }
+
+        .etiqueta-desplegable:hover { border-color: var(--color-oro-secundario); }
+        .etiqueta-desplegable::after { 
+            content: '▼'; 
+            font-size: 0.7rem; 
+            -webkit-text-fill-color: var(--oro-solido);
+            transition: transform 0.3s; 
+        }
+        .etiqueta-desplegable.activo::after { transform: rotate(180deg); }
+
+        .contenedor-desplegable {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, opacity 0.3s;
+            opacity: 0;
+        }
+
+        .contenedor-desplegable.abierto { max-height: 2000px; opacity: 1; margin-bottom: 20px; }
+
+        .contenido-oracion {
+            font-family: 'Lora', serif;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            padding: 10px;
+            font-style: italic;
+            white-space: pre-line;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            max-height: 300px; 
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-oro-secundario) transparent;
+        }
+
+        .texto-oro {
+            background: var(--oro-puro);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .texto-plata {
+            color: #E0E0E0;
+            font-weight: bold;
+            display: inline-block;
+            text-shadow: 0 0 5px rgba(255,255,255,0.3);
+        }
+
+        .texto-rojo {
+            color: var(--rojo-liturgico);
+            font-weight: bold;
+        }
+
+        .texto-celeste {
+            color: var(--celeste-letania);
+            font-weight: bold;
+        }
+
+        .contenido-oracion::-webkit-scrollbar { width: 6px; }
+        .contenido-oracion::-webkit-scrollbar-thumb { background: var(--oro-puro); border-radius: 10px; }
+
+        .contador {
+            font-family: var(--fuente-principal);
+            font-size: 1.1rem;
+            color: var(--oro-brillo);
+            margin-top: auto;
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            padding-top: 15px;
+        }
+
+        .navegacion-circular {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 480px;
+            height: 180px; 
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .cuenta-rosario {
+            width: 65px;
+            height: 65px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            position: relative;
+            z-index: 3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+        }
+
+        .cuenta-rosario img {
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
+        }
+        
+        .cuenta-rosario svg { width: 100%; height: 100%; }
+        .cuenta-rosario:active { transform: scale(0.9) translateY(2px); }
+
+        #btn-prev { margin-right: -20px; }
+        #btn-next { margin-left: -20px; }
+
+        .cadena-conector {
+            width: 300px;
+            height: 40px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            opacity: 0.8;
+        }
+
+        .cristo-central {
+            width: 80px;
+            height: auto;
+            position: absolute;
+            left: 50%;
+            top: 10%;
+            transform: translateX(-50%);
+            z-index: 2;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8));
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cristo-central:active { transform: translateX(-50%) scale(0.9); }
+        
+        /* Efecto cuando el micrófono está escuchando */
+        .escuchando {
+            filter: drop-shadow(0 0 15px #FCF6BA) drop-shadow(0 5px 15px rgba(0,0,0,0.8)) !important;
+            animation: pulse-gold 1.5s infinite;
+        }
+
+        @keyframes pulse-gold {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.1); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+
+        /* ANIMACIÓN DE BRILLO PARA LA CRUZ */
+        @keyframes goldShine {
+            0% { transform: translate(-100px, -100px) rotate(45deg); }
+            100% { transform: translate(100px, 100px) rotate(45deg); }
+        }
+
+        .shine-effect {
+            animation: goldShine 4s infinite;
+        }
+
+        /* ANIMACIÓN DE BRILLO PARA LAS CUENTAS */
+        @keyframes beadShine {
+            0% { transform: translateX(-150%); opacity: 0; }
+            10% { opacity: 0.5; }
+            50% { opacity: 1; }
+            90% { opacity: 0.5; }
+            100% { transform: translateX(150%); opacity: 0; }
+        }
+
+        .bead-shine-element {
+            animation: beadShine 3s infinite;
+        }
+
+        /* --- CONTENEDOR PROGRESO CORAZÓN (BAJADO PARA DAR PROTAGONISMO A LA CRUZ) --- */
+        .corazon-progreso-container {
+            position: absolute;
+            left: 50%;
+            bottom: -50px; 
+            transform: translateX(-50%);
+            width: 150px;
+            height: 130px;
+            z-index: 2;
+            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.8)) drop-shadow(0 4px 10px rgba(0,0,0,0.6));
+            animation: heartbeat 2s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: translateX(-50%) scale(1); }
+            14% { transform: translateX(-50%) scale(1.1); }
+            28% { transform: translateX(-50%) scale(1); }
+            42% { transform: translateX(-50%) scale(1.1); }
+            70% { transform: translateX(-50%) scale(1); }
+        }
+
+        /* Animaciones profesionales con parallax */
+        @keyframes waveAnimateMid {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        @keyframes waveAnimateFront {
+            0% { transform: translateX(-15%); }
+            100% { transform: translateX(-65%); }
+        }
+        @keyframes waveAnimateBack {
+            0% { transform: translateX(-30%); }
+            100% { transform: translateX(-80%); }
+        }
+
+        .wave-path {
+            transition: fill 0.3s ease;
+        }
+
+        .wave-back {
+            animation: waveAnimateBack 10s linear infinite;
+            fill: rgba(183, 149, 63, 0.4); 
+        }
+        .wave-mid {
+            animation: waveAnimateMid 6s linear infinite;
+            fill: rgba(212, 175, 55, 0.6); 
+        }
+        .wave-front {
+            animation: waveAnimateFront 4s linear infinite;
+            fill: rgba(252, 246, 186, 0.7); 
+        }
+
+        #water-level {
+            transition: transform 0.6s ease-out;
+        }
+
+        #modal-oraciones {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: var(--color-purpura-oscuro);
+            border: 2px solid var(--color-oro-secundario);
+            border-radius: 20px;
+            max-width: 550px;
+            height: 85vh;
+            margin: 5vh auto;
+            padding: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 30px rgba(90, 0, 120, 0.5);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(212, 175, 55, 0.4);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            font-family: var(--fuente-principal);
+            background: var(--oro-puro);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.4rem;
+            text-align: center;
+        }
+
+        .lista-personales {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .oracion-acordeon {
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .acordeon-titulo {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--fuente-principal);
+            color: var(--oro-brillo);
+            font-size: 0.95rem;
+            transition: background 0.3s;
+        }
+
+        .acordeon-titulo:hover { background: rgba(90, 0, 120, 0.3); }
+
+        .acordeon-contenido {
+            max-height: 0;
+            padding: 0 15px;
+            background: rgba(0, 0, 0, 0.2);
+            transition: max-height 0.3s ease-out, padding 0.3s;
+            font-family: 'Lora', serif;
+            font-size: 1rem;
+            font-style: italic;
+            white-space: pre-line;
+            opacity: 0;
+        }
+
+        .oracion-acordeon.abierta .acordeon-contenido {
+            max-height: 500px;
+            padding: 15px;
+            opacity: 1;
+        }
+
+        #btn-abrir-formulario {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 55px;
+            height: 55px;
+            background: var(--oro-puro);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: var(--color-purpura-oscuro);
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            z-index: 1010;
+            transition: transform 0.2s;
+        }
+
+        #form-nueva-oracion {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--color-purpura-oscuro);
+            z-index: 1020;
+            padding: 25px;
+            border-radius: 20px;
+            flex-direction: column;
+        }
+
+        #form-nueva-oracion input, #form-nueva-oracion textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--color-oro-secundario);
+            color: white;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            font-family: var(--fuente-secundaria);
+        }
+
+        .btn-accion {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-family: var(--fuente-principal);
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-cancelar { background: #666; color: white; }
+        .btn-guardar { background: var(--oro-puro); color: var(--color-purpura-oscuro); }
+/* Transición suave del oro + ola */
+#golden-fill {
+    transition: y 1.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+                height 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#wave-group {
+    transition: transform 0.3s ease-out;
+}
+
+/* Aseguramos que las olas se vean bien dentro del corazón */
+.wave-path {
+    transition: fill 0.3s ease;
+}
+#modal-continuar .modal-content {
+    animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalPop {
+    from {
+        opacity: 0;
+        transform: scale(0.7) translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+    </style>
+</head>
+<body>
+
+    <svg style="display: none;">
+        <defs>
+            <filter id="metalglow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur" />
+                <feSpecularLighting in="blur" surfaceScale="5" specularConstant="0.9" specularExponent="20" lighting-color="#ffffff" result="specOut">
+                    <fePointLight x="-50" y="-100" z="200" />
+                </feSpecularLighting>
+                <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut" />
+                <feComposite in="SourceGraphic" in2="specOut" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" />
+            </filter>
+
+            <linearGradient id="grad-oro-puro" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#BF953F" />
+                <stop offset="25%" style="stop-color:#FCF6BA" />
+                <stop offset="50%" style="stop-color:#B38728" />
+                <stop offset="100%" style="stop-color:#AA771C" />
+            </linearGradient>
+
+<linearGradient id="grad-oro-rosa" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#BF953F" />
+                <stop offset="25%" style="stop-color:#FCF6BA" />
+                <stop offset="50%" style="stop-color:#B38728" />
+                <stop offset="100%" style="stop-color:#AA771C" />
+            </linearGradient>
+
+
+            <linearGradient id="shine-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#BF953F; stop-opacity:0" />
+                <stop offset="50%" style="stop-color:#FCF6BA; stop-opacity:0.8" />
+                <stop offset="100%" style="stop-color:#AA771C; stop-opacity:0" />
+            </linearGradient>
+            
+            <symbol id="cross-path" viewBox="0 0 100 130">
+                <path d="M45,5 L55,5 L55,35 L85,35 L85,45 L55,45 L55,100 L45,100 L45,45 L15,45 L15,35 L45,35 Z" fill="none" stroke="#6d4c00" stroke-width="1" />
+                
+                <mask id="cross-mask">
+                    <path d="M45,5 L55,5 L55,35 L85,35 L85,45 L55,45 L55,100 L45,100 L45,45 L15,45 L15,35 L45,35 Z" fill="white" />
+                </mask>
+                
+                <g mask="url(#cross-mask)">
+                    <rect x="0" y="0" width="100" height="130" fill="url(#grad-oro-puro)" />
+                    <rect class="shine-effect" x="0" y="0" width="100" height="130" fill="url(#shine-grad)" />
+                </g>
+                
+                <circle cx="50" cy="40" r="3" fill="#ffffff" opacity="0.5"/>
+            </symbol>
+        </defs>
+    </svg>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyCRUwA2b31CsILBAmRhTRQ7xqE8aqb2_lM",
+          authDomain: "familia-reyess.firebaseapp.com",
+          databaseURL: "https://familia-reyess-default-rtdb.firebaseio.com",
+          projectId: "familia-reyess",
+          storageBucket: "familia-reyess.firebasestorage.app",
+          messagingSenderId: "109313819653",
+          appId: "1:109313819653:web:bc46b01f69dfa3e690886c",
+          measurementId: "G-NKWGWPGRTT"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+        const rosarioRef = ref(db, 'estado_rosario');
+
+        window.actualizarProgresoNube = (tipo, indice) => {
+            set(rosarioRef, { 
+                tipo: tipo, 
+                indice: indice, 
+                ultimaActualizacion: Date.now() 
+            });
+        };
+
+        onValue(rosarioRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data && typeof window.sincronizarDesdeNube === 'function') {
+                window.sincronizarDesdeNube(data);
+            }
+        });
+    </script>
+
+    <header>
+<img src="Imagenes/NSVMDLM.png" alt="Logo Izquierda" class="header-logo" onclick="abrirModalVoz()">
+        <h1 onclick="toggleMenu()">Santo Rosario</h1>
+        <img src="Imagenes/M.png" id="logo-musica" alt="Logo Derecha" class="header-logo" style="cursor:pointer;" onclick="toggleMusica()">
+        
+        <div id="menu-misterios">
+            <div class="menu-item" onclick="cambiarMisterio('Gozosos')">Misterios Gozosos</div>
+            <div class="menu-item" onclick="cambiarMisterio('Dolorosos')">Misterios Dolorosos</div>
+            <div class="menu-item" onclick="cambiarMisterio('Gloriosos')">Misterios Gloriosos</div>
+            <div class="menu-item" onclick="cambiarMisterio('Luminosos')">Misterios Luminosos</div>
+        </div>
+    </header>
+
+<div id="modal-oraciones">
+    <div class="modal-content" style="max-width: 480px; height: auto;
+    max-height: 85vh;">
+        <span onclick="cerrarModalVoz()" 
+              style="position: absolute; top: 15px; right: 20px; color: var(--color-oro-secundario); font-size: 28px; cursor: pointer; z-index: 10;">&times;</span>
+        
+        <div class="modal-header">
+            <h2 style="font-family: var(--fuente-principal); background: var(--oro-puro); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                🎤 Comandos de Voz
+            </h2>
+            <p style="text-align: center; opacity: 0.85; margin: 8px 0 20px; font-size: 0.95rem;">
+                Di cualquiera de estas palabras para avanzar en el Rosario
+            </p>
+        </div>
+
+        <div id="lista-triggers" style="max-height: 320px; overflow-y: auto; padding-right: 8px; margin-bottom: 20px;"></div>
+        
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="nuevo-trigger" 
+                   placeholder="Ej: amén, gloria, siguiente, vamos, santo..." 
+                   style="flex: 1; background: rgba(255,255,255,0.05); border:
+                   1px solid var(--color-oro-secundario); color: white; padding:
+                   1px; border-radius: 50px; font-family:
+                   var(--fuente-secundaria); font-size: 1rem;"></div>
+                   
+           <div  <button onclick="agregarTriggerVoz()" 
+                    style="background: var(--oro-puro); color: #1a0026; border:
+                    none; padding: 1px 1px; border-radius: 50px; font-weight:
+                    bold; cursor: pointer; white-space: nowrap;">
+                Agregar
+            </button>
+        </div>
+        
+        <p style="font-size: 0.82rem; opacity: 0.7; text-align: center; margin-top: 15px;">
+            La cruz dorada debe estar brillando para que el micrófono escuche.
+        </p>
+    </div>
+</div>
+
+    <div id="app-container">
+        <div class="card">
+            <img src="Imagenes/NSVMDLM.png" id="imagen-guia" class="imagen-principal" alt="Ilustración">
+            
+            <div class="etiqueta-desplegable" id="titulo-seccion" onclick="toggleDesplegable()">
+                Cargando...
+            </div>
+
+            <div class="contenedor-desplegable" id="desplegable-texto">
+                <div class="contenido-oracion" id="texto-oracion">
+                    Iniciando...
+                </div>
+            </div>
+
+            <div class="contador" id="contador-display">
+                0 / 0
+            </div>
+        </div>
+
+        <div class="navegacion-circular">
+            <div id="btn-prev" class="cuenta-rosario" onclick="navegar(-1)"></div>
+            <div id="conector" class="cadena-conector">
+                <svg width="100%" height="100%" viewBox="0 0 300 40">
+                    <path d="M10,20 Q40,5 70,20 T130,20 T190,20 T250,20 T290,20" fill="none" stroke="url(#grad-oro-puro)" stroke-width="4" filter="url(#metalglow)" stroke-dasharray="10 5" />
+                </svg>
+            </div>
+            
+            <div class="cristo-central" id="cruz-voz" onclick="toggleEscuchaVoz()">
+                <svg viewBox="0 0 100 130">
+                    <defs>
+                        <radialGradient id="ray-grad" cx="50%" cy="40%" r="50%" fx="50%" fy="40%">
+                            <stop offset="0%" style="stop-color:#FCF6BA; stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#BF953F; stop-opacity:0" />
+                        </radialGradient>
+                    </defs>
+                    
+                    <g id="cruz-rays" transform="translate(50, 40)">
+                        <line x1="0" y1="0" x2="0" y2="-60" stroke="url(#ray-grad)" stroke-width="2" />
+                        <line x1="0" y1="0" x2="0" y2="60" stroke="url(#ray-grad)" stroke-width="2" />
+                        <line x1="0" y1="0" x2="-60" y2="0" stroke="url(#ray-grad)" stroke-width="2" />
+                        <line x1="0" y1="0" x2="60" y2="0" stroke="url(#ray-grad)" stroke-width="2" />
+                        <line x1="0" y1="0" x2="-40" y2="-40" stroke="url(#ray-grad)" stroke-width="1.5" />
+                        <line x1="0" y1="0" x2="40" y2="-40" stroke="url(#ray-grad)" stroke-width="1.5" />
+                        <line x1="0" y1="0" x2="-40" y2="40" stroke="url(#ray-grad)" stroke-width="1.5" />
+                        <line x1="0" y1="0" x2="40" y2="40" stroke="url(#ray-grad)" stroke-width="1.5" />
+                    </g>
+                    
+                    <g filter="url(#metalglow)">
+                        <use href="#cross-path" />
+                    </g>
+                </svg>
+            </div>
+
+<div class="corazon-progreso-container">
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" id="heart-svg">
+        <defs>
+            <linearGradient id="grad-oro-puro-local" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#BF953F" />
+                <stop offset="25%" style="stop-color:#FCF6BA" />
+                <stop offset="50%" style="stop-color:#B38728" />
+                <stop offset="100%" style="stop-color:#AA771C" />
+            </linearGradient>
+            
+            <mask id="heart-mask">
+                <path d="M50,88 C50,88 15,65 15,38 C15,22 28,12 42,12 C45,12 48,13 50,15 C52,13 55,12 58,12 C72,12 85,22 85,38 C85,65 50,88 50,88 Z" 
+                      fill="white" />
+            </mask>
+        </defs>
+        
+        <g mask="url(#heart-mask)">
+            <rect x="0" y="0" width="100" height="100" fill="rgba(212,175,55,0.08)" />
+            
+            <rect id="golden-fill" 
+                  x="0" 
+                  y="100" 
+                  width="100" 
+                  height="0" 
+                  fill="url(#grad-oro-puro-local)" 
+                  opacity="0.98" />
+        </g>
+        
+        <path d="M50,88 C50,88 15,65 15,38 C15,22 28,12 42,12 C45,12 48,13 50,15 C52,13 55,12 58,12 C72,12 85,22 85,38 C85,65 50,88 50,88 Z" 
+              fill="none" 
+              stroke="#D4AF37" 
+              stroke-width="3" 
+              style="filter: drop-shadow(0 0 5px rgba(212, 175, 55, 1)) url(#metalglow);" />
+    </svg>
+</div>
+            <div id="btn-next" class="cuenta-rosario" onclick="navegar(1)"></div>
+        </div>
+    </div>
+
+    <div class="progreso-bar" id="progreso" style="display: none;"></div>
+<div id="modal-continuar" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 2000; justify-content: center; align-items: center;">
+    <div class="modal-content" style="background: linear-gradient(135deg, #2a0038 0%, #1a0026 100%); border: 2px solid #D4AF37; border-radius: 20px; max-width: 380px; width: 90%; padding: 25px; text-align: center; box-shadow: 0 15px 40px rgba(212,175,55,0.3);">
+        
+        <div style="margin-bottom: 20px;">
+            <img src="Imagenes/NSVMDLM.png" alt="Virgen" style="width: 85px; filter: drop-shadow(0 5px 15px rgba(212,175,55,0.6));">
+        </div>
+        
+        <h2 style="font-family: 'Playfair Display', serif; background: var(--oro-puro); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.6rem; margin-bottom: 15px;">
+            ¿Continuar oración?
+        </h2>
+        
+        <p id="mensaje-continuar" style="font-family: 'Lora', serif; font-size: 1.05rem; line-height: 1.5; color: #f0e6d2; margin-bottom: 30px;">
+            Tienes un Rosario en curso en los <strong>Misterios Gozosos</strong>
+        </p>
+
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <button onclick="rechazarContinuar()" 
+                    style="flex: 1; padding: 14px; background: #4a2a5c; color: white; border: 1px solid #D4AF37; border-radius: 8px; font-family: 'Poppins', sans-serif; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                Empezar de nuevo
+            </button>
+            
+            <button onclick="aceptarContinuar()" 
+                    style="flex: 1; padding: 14px; background: var(--oro-puro); color: #1a0026; border: none; border-radius: 8px; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(212,175,55,0.4);">
+                Continuar
+            </button>
+        </div>
+        
+        <div onclick="cerrarModalContinuar()" 
+             style="margin-top: 20px; color: #aa771c; font-size: 0.9rem; cursor: pointer; text-decoration: underline;">
+            Cancelar
+        </div>
+    </div>
+</div>
+<div id="modal-final" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(26, 0, 38, 0.98); z-index: 3000; justify-content: center; align-items: center; overflow-y: auto;">
+    <div style="max-width: 420px; width: 92%; text-align: center; padding: 30px 20px;">
+        
+        <div style="margin-bottom: 25px; filter: drop-shadow(0 10px 25px rgba(212, 175, 55, 0.6));">
+            <svg id="ramo-flores" width="180" height="180" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                </svg>
+        </div>
+
+        <h1 style="font-family: 'Playfair Display', serif; font-size: 2.1rem; background: var(--oro-puro); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; line-height: 1.1;">
+            ¡Completado!
+        </h1>
+
+        <p style="font-family: 'Lora', serif; font-size: 1.35rem; line-height: 1.4; color: #f8e9c0; margin-bottom: 25px;">
+            Has completado el ramo para Nuestra Madre la Virgen María.
+        </p>
+
+        <div style="background: rgba(212,175,55,0.08); border: 1px solid rgba(212,175,55,0.3); border-radius: 15px; padding: 20px; margin-bottom: 30px;">
+            <p style="font-family: 'Lora', serif; font-size: 1.1rem; line-height: 1.6; color: #e8d9a8; font-style: italic;">
+                Que la paz de Cristo, el amor de María<br>
+                y la gracia del Santo Rosario,<br>
+                permanezcan en tu corazón<br>
+                y te acompañen siempre.
+            </p>
+        </div>
+
+        <button onclick="cerrarModalFinal()" 
+                style="background: var(--oro-puro); color: #1a0026; border: none; padding: 16px 40px; border-radius: 50px; font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(212,175,55,0.5); transition: all 0.3s;">
+            Volver a empezar
+        </button>
+
+        <div onclick="cerrarModalFinal()" 
+             style="margin-top: 25px; color: #aa771c; font-size: 1rem; cursor: pointer; text-decoration: underline;">
+            Cerrar
+        </div>
+    </div>
+</div>
+    <audio id="musica-gregoriana" loop>
+        <source src="Audio/Salve.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        let pasos = [];
+        let indiceActual = 0;
+        let tipoActual = "";
+        let dataOraciones = null;
+        let desplegableCerradoManual = false;
+        let bloqueandoSincronizacion = false;
+        let intencionPapaCache = null;
+
+        let reproduciendo = false;
+        const audio = document.getElementById('musica-gregoriana');
+        const logoM = document.getElementById('logo-musica');
+
+// SVG JAZPE (ORO AMARILLO) - Brillo mejorado
+const SVG_JAZPE = `
+    <svg viewBox="0 0 100 100" filter="url(#metalglow)">
+        <defs>
+            <radialGradient id="rgrad-oro-bead" cx="35%" cy="35%" r="60%" fx="35%" fy="35%">
+                <stop offset="0%" style="stop-color:#FCF6BA" />
+                <stop offset="70%" style="stop-color:#B38728" />
+                <stop offset="100%" style="stop-color:#AA771C" />
+            </radialGradient>
+            <linearGradient id="shine-grad-bead" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#ffffff; stop-opacity:0" />
+                <stop offset="40%" style="stop-color:#ffffff; stop-opacity:0.95" />
+                <stop offset="60%" style="stop-color:#ffffff; stop-opacity:0.7" />
+                <stop offset="100%" style="stop-color:#ffffff; stop-opacity:0" />
+            </linearGradient>
+            <mask id="bead-mask-jazpe">
+                <circle cx="50" cy="50" r="40" fill="white" />
+            </mask>
+        </defs>
+        <circle cx="50" cy="50" r="40" fill="url(#rgrad-oro-bead)" stroke="#6d4c00" stroke-width="4" />
+        
+        <g mask="url(#bead-mask-jazpe)">
+            <ellipse class="bead-shine-element" cx="50" cy="50" rx="12" ry="55" fill="url(#shine-grad-bead)" 
+                     transform="rotate(35 50 50)" />
+        </g>
+        
+        <path d="M35,35 Q50,18 65,35" fill="none" stroke="#fff" stroke-width="3" opacity="0.45" />
+    </svg>`;
+
+// SVG ROSA (ORO ROSA) - Ahora con el MISMO efecto de brillo
+const SVG_ROSA = `
+    <svg viewBox="0 0 100 100" filter="url(#metalglow)">
+        <defs>
+            <radialGradient id="rgrad-rosa-bead" cx="35%" cy="35%" r="60%" fx="35%" fy="35%">
+                <stop offset="0%" style="stop-color:#f8c3cd" />
+                <stop offset="50%" style="stop-color:#e0acb2" />
+                <stop offset="100%" style="stop-color:#b76e79" />
+            </radialGradient>
+            <linearGradient id="shine-grad-bead-rosa" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#ffffff; stop-opacity:0" />
+                <stop offset="40%" style="stop-color:#ffffff; stop-opacity:0.9" />
+                <stop offset="60%" style="stop-color:#ffffff; stop-opacity:0.65" />
+                <stop offset="100%" style="stop-color:#ffffff; stop-opacity:0" />
+            </linearGradient>
+            <mask id="bead-mask-rosa">
+                <circle cx="50" cy="50" r="38" fill="white" />
+            </mask>
+        </defs>
+        <circle cx="50" cy="50" r="38" fill="url(#rgrad-rosa-bead)" stroke="#5e3a40" stroke-width="4" />
+        
+        <g mask="url(#bead-mask-rosa)">
+            <ellipse class="bead-shine-element" cx="50" cy="50" rx="12" ry="52" fill="url(#shine-grad-bead-rosa)" 
+                     transform="rotate(35 50 50)" />
+        </g>
+        
+        <path d="M50,22 C62,22 73,33 50,48 C30,33 40,22 50,22" fill="#fff" opacity="0.35" />
+    </svg>`;
+
+// ==================== NUEVA LÓGICA DE VOZ MEJORADA (ANTI-SALTOS) ====================
+let voiceTriggers = [];
+let recognition = null;
+let estaEscuchando = false;
+let puedeAvanzar = true;          // ← Nuevo: control anti-saltos
+const TIEMPO_BLOQUEO = 1500;      // 1.5 segundos de bloqueo después de avanzar
+
+function cargarTriggersVoz() {
+    voiceTriggers = JSON.parse(localStorage.getItem('voiceTriggers')) || ['amén', 'amen'];
+}
+
+function guardarTriggersVoz() {
+    localStorage.setItem('voiceTriggers', JSON.stringify(voiceTriggers));
+}
+
+function renderizarTriggersVoz() {
+    const container = document.getElementById('lista-triggers');
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (voiceTriggers.length === 0) {
+        container.innerHTML = '<p style="opacity:0.6; font-style:italic; text-align:center; padding:15px;">No hay comandos de voz.<br>Agrega uno abajo 👇</p>';
+        return;
+    }
+
+    voiceTriggers.forEach((trigger, index) => {
+        const div = document.createElement('div');
+        div.style = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:10px 15px; border-radius:8px; margin-bottom:8px;';
+        div.innerHTML = `
+            <span style="color:#f0e6d2; font-size:1.05rem;">${trigger}</span>
+            <span onclick="eliminarTriggerVoz(${index}); event.stopImmediatePropagation();" style="color:#ff4d4d; cursor:pointer; font-size:1.4rem; padding:0 8px;">&times;</span>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function agregarTriggerVoz() {
+    const input = document.getElementById('nuevo-trigger');
+    const nuevo = input.value.trim();
+    if (!nuevo) return;
+
+    if (voiceTriggers.some(t => t.toLowerCase() === nuevo.toLowerCase())) {
+        alert('⚠️ Ese comando ya existe');
+        return;
+    }
+
+    voiceTriggers.push(nuevo);
+    guardarTriggersVoz();
+    renderizarTriggersVoz();
+    input.value = '';
+}
+
+function eliminarTriggerVoz(index) {
+    if (confirm('¿Eliminar este comando de voz?')) {
+        voiceTriggers.splice(index, 1);
+        guardarTriggersVoz();
+        renderizarTriggersVoz();
+    }
+}
+
+function initVoz() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        console.log("❌ Reconocimiento de voz no soportado");
+        return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'es-ES';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onresult = (event) => {
+        if (!puedeAvanzar) return;
+
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+                transcript += event.results[i][0].transcript + ' ';
+            }
+        }
+        transcript = transcript.toLowerCase().trim();
+        if (!transcript) return;
+
+        // 1. Obtener el final del texto actual para validar
+        const contenedorTexto = document.getElementById('texto-oracion');
+        const textoLimpio = contenedorTexto.innerText.toLowerCase().trim();
+        const palabras = textoLimpio.split(/\s+/);
+        // Tomamos la última palabra del texto (ej: "amén", "nosotros", "padre")
+        const ultimaPalabraDelTexto = palabras[palabras.length - 1].replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+
+        // 2. Verificar triggers
+        const comandosAvanzar = voiceTriggers.map(t => t.toLowerCase());
+        const detectaComando = comandosAvanzar.some(trigger => transcript.includes(trigger));
+        
+        // 3. Validación: ¿Lo que dijo el usuario incluye la última palabra del rezo actual?
+        const mencionoFinal = transcript.includes(ultimaPalabraDelTexto);
+
+        // Solo avanzamos si detecta el comando (Amén) Y mencionó la última parte del texto
+        if (detectaComando && mencionoFinal) {
+            navegar(1); 
+            
+            // Bloqueo de seguridad para evitar saltos dobles
+            puedeAvanzar = false;
+            setTimeout(() => { puedeAvanzar = true; }, 1500);
+
+            // Reinicio breve del micro para limpiar el buffer
+            if (estaEscuchando) {
+                recognition.stop();
+                setTimeout(() => { if (estaEscuchando) recognition.start(); }, 600);
+            }
+        }
+    };
+
+    recognition.onerror = (event) => { console.error('Error de voz:', event.error); };
+    recognition.onend = () => { if (estaEscuchando) recognition.start(); };
+}
+
+
+function toggleEscuchaVoz() {
+    const cruz = document.getElementById('cruz-voz');
+    if (!recognition) initVoz();
+    if (!recognition) return;
+
+    if (!estaEscuchando) {
+        recognition.start();
+        estaEscuchando = true;
+        cruz.classList.add('escuchando');
+    } else {
+        recognition.stop();
+        estaEscuchando = false;
+        cruz.classList.remove('escuchando');
+    }
+}
+
+        function toggleMusica() {
+            if (!reproduciendo) {
+                audio.play().then(() => {
+                    reproduciendo = true;
+                    logoM.classList.add('musica-activa');
+                }).catch(e => console.log("Interacción requerida"));
+            } else {
+                audio.pause();
+                reproduciendo = false;
+                logoM.classList.remove('musica-activa');
+            }
+        }
+
+function abrirOracionesPersonales() {
+    document.getElementById('modal-oraciones').style.display = 'block';
+    renderizarOracionesPersonales();
+    renderizarTriggersVoz();   // ← agrega esta línea
+}
+
+// ==================== FUNCIONES DEL MODAL DE COMANDOS DE VOZ ====================
+
+function abrirModalVoz() {
+    document.getElementById('modal-oraciones').style.display = 'block';
+    renderizarTriggersVoz();
+}
+
+function cerrarModalVoz() {
+    document.getElementById('modal-oraciones').style.display = 'none';
+}
+
+function renderizarTriggersVoz() {
+    const container = document.getElementById('lista-triggers');
+    container.innerHTML = '';
+
+    if (voiceTriggers.length === 0) {
+        container.innerHTML = '<p style="opacity:0.6; font-style:italic; text-align:center; padding:40px 20px;">No hay comandos de voz.<br>Agrega uno abajo 👇</p>';
+        return;
+    }
+
+    voiceTriggers.forEach((trigger, index) => {
+        const div = document.createElement('div');
+        div.style = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:12px 16px; border-radius:10px; margin-bottom:8px;';
+        div.innerHTML = `
+            <span style="color:#f0e6d2; font-size:1.05rem;">${trigger}</span>
+            <span onclick="eliminarTriggerVoz(${index}); event.stopImmediatePropagation();" 
+                  style="color:#ff4d4d; cursor:pointer; font-size:1.5rem; padding:0 10px;">&times;</span>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function agregarTriggerVoz() {
+    const input = document.getElementById('nuevo-trigger');
+    const nuevo = input.value.trim();
+    if (!nuevo) return;
+
+    if (voiceTriggers.some(t => t.toLowerCase() === nuevo.toLowerCase())) {
+        alert('⚠️ Ese comando ya existe');
+        return;
+    }
+
+    voiceTriggers.push(nuevo);
+    guardarTriggersVoz();
+    renderizarTriggersVoz();
+    input.value = '';
+    input.focus();
+}
+
+function eliminarTriggerVoz(index) {
+    if (confirm(`¿Eliminar el comando "${voiceTriggers[index]}"?`)) {
+        voiceTriggers.splice(index, 1);
+        guardarTriggersVoz();
+        renderizarTriggersVoz();
+    }
+}
+async function obtenerIntencionPapaReal() {
+    const RSS_URL = "https://www.vaticannews.va/es.rss.xml";
+    const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
+
+    try {
+        const respuesta = await fetch(API_URL);
+        const data = await respuesta.json();
+
+        // Buscamos el artículo oficial de abril 2026
+        let item = data.items.find(i => 
+            i.title.toLowerCase().includes("abril") && 
+            i.title.toLowerCase().includes("sacerdotes")
+        );
+
+        if (!item) {
+            item = data.items.find(i => i.title.toLowerCase().includes("intención") && i.title.toLowerCase().includes("sacerdotes"));
+        }
+
+        if (item) {
+            let oracionLimpia = (item.description || item.content || "")
+                .replace(/<[^>]+>/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+
+            if (oracionLimpia.length < 100) {
+                oracionLimpia = "Oremos por los sacerdotes que atraviesan momentos de crisis en su vocación, cuando la soledad pesa, las dudas oscurecen el corazón y el cansancio parece más fuerte que la esperanza. Que encuentren el acompañamiento necesario, amistades sanas, redes de apoyo fraterno y la gracia de redescubrir la belleza de su vocación. Que las comunidades los sostengan con comprensión y oración sincera, recordando que no son funcionarios ni héroes solitarios, sino hijos amados y pastores sostenidos por la oración de su pueblo.";
+            }
+
+            return { 
+                titulo: "Intención del Santo Padre", 
+                intencion: item.title || "Por los sacerdotes en crisis",
+                oracion: oracionLimpia
+            };
+        }
+    } catch (e) {
+        console.error("Error al conectar con Vatican News:", e);
+    }
+
+    // TEXTO OFICIAL COMPLETO Y EXACTO (abril 2026) - siempre funciona
+    return { 
+        titulo: "Intención del Santo Padre", 
+        intencion: "Por los sacerdotes en crisis",
+        oracion: "Oremos por los sacerdotes que atraviesan momentos de crisis en su vocación, cuando la soledad pesa, las dudas oscurecen el corazón y el cansancio parece más fuerte que la esperanza. Que encuentren el acompañamiento necesario, amistades sanas, redes de apoyo fraterno y la gracia de redescubrir la belleza de su vocación. Que las comunidades los sostengan con comprensión y oración sincera, recordando que no son funcionarios ni héroes solitarios, sino hijos amados y pastores sostenidos por la oración de su pueblo."
+    };
+}
+
+        function toggleMenu() {
+            const menu = document.getElementById('menu-misterios');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleDesplegable() {
+            const cont = document.getElementById('desplegable-texto');
+            const tit = document.getElementById('titulo-seccion');
+            cont.classList.toggle('abierto');
+            tit.classList.toggle('activo');
+            desplegableCerradoManual = !cont.classList.contains('abierto');
+        }
+
+        function cambiarMisterio(tipo) {
+            document.getElementById('menu-misterios').style.display = 'none';
+            cargarRosario(tipo);
+        }
+
+        window.sincronizarDesdeNube = function(data) {
+            if (bloqueandoSincronizacion) return;
+            if (data.tipo !== tipoActual) {
+                bloqueandoSincronizacion = true;
+                cargarRosario(data.tipo, data.indice).then(() => { bloqueandoSincronizacion = false; });
+            } else if (data.indice !== indiceActual) {
+                indiceActual = data.indice;
+                actualizarUI();
+            }
+        };
+
+        function obtenerMisterioDelDia() {
+            const dia = new Date().getDay();
+            if (dia === 1 || dia === 6) return 'Gozosos';
+            if (dia === 2 || dia === 5) return 'Dolorosos';
+            if (dia === 4) return 'Luminosos';
+            return 'Gloriosos';
+        }
+
+        function obtenerPalabraTiempo() {
+            const hora = new Date().getHours();
+            if (hora >= 0 && hora < 6) return "esta madrugada";
+            if (hora >= 6 && hora < 12) return "este día";
+            if (hora >= 12 && hora < 18) return "esta tarde";
+            return "esta noche";
+        }
+
+        function procesarTextoDinamico(texto, esFinal) {
+            if (!texto) return "";
+            let textoProcesado = texto.replace(/\b(SENTADOS|DE PIE)\b/g, '<span class="texto-oro">$1</span>');
+            textoProcesado = textoProcesado.replace(/\bV\//g, '<span class="texto-rojo">℣</span>');
+            textoProcesado = textoProcesado.replace(/\bR\//g, '<span class="texto-oro">℟</span>');
+            textoProcesado = textoProcesado.replace(/\bAmén\b/g, '<span class="texto-oro">Amén</span>');
+            textoProcesado = textoProcesado.replace(/(\d+[\w,.;\-]*\d+|\d+)/g, '<span class="texto-rojo">$1</span>');
+            
+            const frasesCelestes = ["Del Evangelio de San Juan","Del Evangelio de San Marcos","Del Evangelio de San Lucas","Del Evangelio de San Mateo","De Hechos de los Apóstoles","Del Libro del Apocalipsis","De Cantar de los Cantares","TEN PIEDAD DE NOSOTROS","RUEGA POR NOSOTROS","Perdónanos, Señor.","Escúchanos, Señor.","Ten piedad y misericordia de nosotros, Señor."];
+            frasesCelestes.forEach(frase => {
+                const regex = new RegExp(frase, "gi");
+                textoProcesado = textoProcesado.replace(regex, `<span class="texto-celeste">$&</span>`);
+            });
+
+            const misteriosPlateados = ["La Encarnación del Hijo de Dios","La visita de nuestra Señora a su prima santa Isabel","El Nacimiento del niño Jesús en Belén","La Presentación del niño Jesús en el Templo","El Niño Perdido y Hallado en el Templo","La Agonía de Jesús en el Huerto","La Flagelación de nuestro Señor Jesucristo atado a la columna","La coronación de espinas","Jesús con la Cruz a Cuestas camino al Calvario","La Crucifixión y Muerte de nuestro Señor Jesucristo","La Resurrección de nuestro Señor Jesucristo","La Venida del Espíritu Santo sobre la Virgen María y los Apóstoles","La Ascensión de nuestro Señor Jesucristo","La Asunción de nuestra Señora a los Cielos","La Coronación de la Virgen María como Reina y Señora de todo lo creado","El Bautismo de Nuestro Señor Jesús en el Jordán","La autorevelación de Jesús en las bodas de Caná","El Anuncio del Reino de Dios invitando a la conversión","La Transfiguración de Nuestro Señor Jesucristo","La Institución de la Eucaristía"];
+            misteriosPlateados.forEach(misterio => {
+                const regex = new RegExp(misterio, "gi");
+                textoProcesado = textoProcesado.replace(regex, `<span class="texto-plata">$&</span>`);
+            });
+
+            if (esFinal) {
+                const fraseTiempo = obtenerPalabraTiempo();
+                textoProcesado = textoProcesado.replace(/(este|esta)\s+(día|mañana|tarde|noche|madrugada)/gi, fraseTiempo);
+                return textoProcesado.charAt(0).toUpperCase() + textoProcesado.slice(1);
+            }
+            return textoProcesado;
+        }
+
+        function guardarProgreso() {
+            if (bloqueandoSincronizacion) return;
+            const progreso = { tipo: tipoActual, indice: indiceActual };
+            localStorage.setItem('progresoRosario', JSON.stringify(progreso));
+            if (window.actualizarProgresoNube) { window.actualizarProgresoNube(tipoActual, indiceActual); }
+        }
+
+function recuperarProgreso() {
+    const guardado = localStorage.getItem('progresoRosario');
+    if (!guardado) return false;
+
+    const data = JSON.parse(guardado);
+    
+    // Mostrar el modal bonito en lugar del confirm()
+    mostrarModalContinuar(data);
+    return true; // devolvemos true para que no cargue inmediatamente
+}
+
+// Nueva función para mostrar el modal
+function mostrarModalContinuar(data) {
+    const modal = document.getElementById('modal-continuar');
+    const mensaje = document.getElementById('mensaje-continuar');
+    
+    mensaje.innerHTML = `
+        Tienes un Rosario en curso en los <strong>Misterios ${data.tipo}</strong><br><br>
+    `;
+    
+    modal.style.display = 'flex';
+    
+    // Guardamos temporalmente el progreso para usarlo después
+    window.progresoTemporal = data;
+}
+
+// Función para aceptar continuar
+function aceptarContinuar() {
+    const data = window.progresoTemporal;
+    if (data) {
+        cargarRosario(data.tipo, data.indice);
+    }
+    cerrarModalContinuar();
+}
+
+// Función para empezar de nuevo
+function rechazarContinuar() {
+    localStorage.removeItem('progresoRosario');
+    cerrarModalContinuar();
+    cargarRosario(); // carga desde el principio
+}
+
+// Función para cerrar el modal
+function cerrarModalContinuar() {
+    document.getElementById('modal-continuar').style.display = 'none';
+}
+
+        async function cargarRosario(tipoMisterio = null, indiceGuardado = 0) {
+            try {
+                if (!dataOraciones) {
+                    const respuesta = await fetch('oraciones.json');
+                    dataOraciones = await respuesta.json();
+                }
+                tipoActual = tipoMisterio || obtenerMisterioDelDia();
+                const secuencia = [];
+                const base = dataOraciones.oraciones_base;
+
+                const imgOracionesIniciales = ["Virgen.png", "Cruz.png", "Padre.png", "Santísimo_Trinidad.png", "Virgen.png", "Jesús.png", "Santísimo_Trinidad.png", "Virgen.png"];
+                const imgMisteriosMap = {
+                    "Gozosos": ["Encarnación.png", "Visita.png", "Nacimiento.png", "Presentación.png", "Hallazgo.png"],
+                    "Dolorosos": ["Agonía.png", "Flagelación.png", "Coronación.png", "Acuestas.png", "Crucifixión.png"],
+                    "Gloriosos": ["Resurrección.png", "Ascensión.png", "Venida.png", "Asunción.png", "CoronaciónM.png"],
+                    "Luminosos": ["Bautismo.png", "Cana.png", "Anuncio.png", "Transfiguración.png", "Institución.png"]
+                };
+                const imgJaculatorias = ["Virgen.png", "Virgen.png", "Virgen.png", "Jesús.png", "Virgen.png", "Corazón_Jesús.png", "Corazón_María.png", "Jesús.png", "San_José.png"];
+                const imgCierre = ["Padre.png", "Virgen.png", "Virgen.png", "Virgen.png", "Virgen.png", "Santísima_Trinidad.png", "Papa.png", "Padre.png", "Virgen.png", "Santísima_Trinidad.png", "Reina.png", "Virgen.png", "Virgen.png", "Corpus_Christi.png", "Santísima_Trinidad.png", "Santísima_Trinidad.png", "Santísima_Trinidad.png", "San_Damián.png", "San_Damián.png", "Virgen.png", "Virgen.png", "Virgen.png", "Virgen.png", "Virgen.png", "Virgen.png", "Virgen.png", "Sagrada_Familia.png", "Virgen.png", "Virgen.png", "Virgen.png", "Virgen.png", "Virgen.png", "Jesús_Paz.png"];
+
+                dataOraciones.preparacion.forEach((item, i) => {
+                    secuencia.push({ tipo: item.titulo, texto: item.texto, cuenta: i + 1, total: dataOraciones.preparacion.length, tipoCuenta: 'jazpe', ilustracion: `Imagenes/${imgOracionesIniciales[i] || 'NSVMDLM.png'}`, esFinal: false });
+                });
+
+                const listaMisterios = dataOraciones.misterios_nombres[tipoActual];
+                const ordinales = ["1er", "2do", "3er", "4to", "5to"];
+                
+                listaMisterios.forEach((textoMisterio, index) => {
+                    const mNum = index + 1;
+                    secuencia.push({ tipo: `${ordinales[index]} Misterio ${tipoActual}`, texto: textoMisterio, cuenta: mNum, total: 5, tipoCuenta: 'jazpe', ilustracion: `Imagenes/${imgMisteriosMap[tipoActual][index]}`, esFinal: false });
+                    secuencia.push({ tipo: "Padre Nuestro", texto: base.padre_nuestro, cuenta: 1, total: 1, tipoCuenta: 'jazpe', ilustracion: 'Imagenes/Padre.png', esFinal: false });
+                    for (let a = 1; a <= 10; a++) { secuencia.push({ tipo: "Ave María", texto: base.ave_maria, cuenta: a, total: 10, tipoCuenta: 'rosa', ilustracion: 'Imagenes/Virgen.png', esFinal: false }); }
+                    secuencia.push({ tipo: "Gloria", texto: base.gloria, cuenta: 1, total: 1, tipoCuenta: 'jazpe', ilustracion: 'Imagenes/Santísima_Trinidad.png', esFinal: false });
+                    dataOraciones.jaculatorias_por_misterio.forEach((jac, j) => { secuencia.push({ tipo: jac.titulo, texto: jac.texto, cuenta: j + 1, total: dataOraciones.jaculatorias_por_misterio.length, tipoCuenta: 'jazpe', ilustracion: `Imagenes/${imgJaculatorias[j] || 'Jaculatoria.png'}`, esFinal: false }); });
+                });
+
+dataOraciones.cierre.forEach((item, i) => {
+    const esPasoEspecial = (i === 21 || i === 22 || i === 32); 
+
+    // ✅ NUEVA LÓGICA: contador especial para las oraciones 15, 16 y 17
+    let cuenta = i + 1;
+    let total = dataOraciones.cierre.length;
+
+    if (i === 14) { cuenta = 1; total = 3; }   // 15ª → 1
+    else if (i === 15) { cuenta = 2; total = 3; } // 16ª → 2
+    else if (i === 16) { cuenta = 3; total = 3; } // 17ª → 3
+    if (i === 23) { cuenta = 1; total = 3; }   // 23ª → 1
+    else if (i === 24) { cuenta = 2; total = 3; } // 24ª → 2
+    else if (i === 25) { cuenta = 3; total = 3; } // 25ª → 3
+
+    secuencia.push({ 
+        tipo: item.titulo, 
+        texto: item.texto, 
+        cuenta: cuenta, 
+        total: total, 
+        tipoCuenta: 'jazpe', 
+        esPasoHorario: (i === dataOraciones.cierre.length - 1), 
+        esFinal: esPasoEspecial || (i === dataOraciones.cierre.length - 1), 
+        ilustracion: `Imagenes/${imgCierre[i] || 'M.png'}`
+    });
+
+    // Jaculatorias después de la 6ª oración final
+    if (i === 5) { 
+        dataOraciones.jaculatorias_por_misterio.forEach((jac, j) => { 
+            secuencia.push({ tipo: jac.titulo, texto: jac.texto, cuenta: j + 1, total: dataOraciones.jaculatorias_por_misterio.length, tipoCuenta: 'jazpe', ilustracion: `Imagenes/${imgJaculatorias[j] || 'Jaculatoria.png'}`, esFinal: false }); 
+        }); 
+    }
+
+    // Jaculatorias también después de la 10ª oración final
+    if (i === 9) { 
+        dataOraciones.jaculatorias_por_misterio.forEach((jac, j) => { 
+            secuencia.push({ tipo: jac.titulo, texto: jac.texto, cuenta: j + 1, total: dataOraciones.jaculatorias_por_misterio.length, tipoCuenta: 'jazpe', ilustracion: `Imagenes/${imgJaculatorias[j] || 'Jaculatoria.png'}`, esFinal: false }); 
+        }); 
+    }
+});
+
+                pasos = secuencia;
+                indiceActual = indiceGuardado;
+                actualizarUI();
+            } catch (error) { console.error("Error:", error); }
+        }
+
+    async function actualizarUI() {
+        if (pasos.length === 0) return;
+        const hora = new Date().getHours();
+        let pasoActual = pasos[indiceActual];
+        
+        let tituloFinal = pasoActual.tipo;
+        let textoFinal = procesarTextoDinamico(pasoActual.texto, pasoActual.esFinal);
+        let ilustracionFinal = pasoActual.ilustracion;
+
+        if (pasoActual.esPasoHorario) {
+            const tiempoFrase = obtenerPalabraTiempo();
+            if (hora >= 0 && hora < 6) { tituloFinal = "Buenas Madrugadas"; textoFinal = `En ${tiempoFrase}, nos despedimos bajo tu manto, Madre Santa.`; ilustracionFinal = "Imagenes/Madrugada.png"; }
+            else if (hora >= 6 && hora < 12) { tituloFinal = "Buenos Días"; textoFinal = `En ${tiempoFrase} que comienza, te entregamos nuestras obras.`; ilustracionFinal = "Imagenes/Día.png"; }
+            else if (hora >= 12 && hora < 18) { tituloFinal = "Buenas Tardes"; textoFinal = `Al caer la tarde en ${tiempoFrase}, te damos gracias.`; ilustracionFinal = "Imagenes/Tarde.png"; }
+            else { tituloFinal = "Buenas Noches"; textoFinal = `Al llegar ${tiempoFrase}, nos encomendamos a tu protección.`; ilustracionFinal = "Imagenes/Noche.png"; }
+        }
+
+        const imgGuia = document.getElementById('imagen-guia');
+        const desplegable = document.getElementById('desplegable-texto');
+        const titulo = document.getElementById('titulo-seccion');
+
+        if (desplegableCerradoManual) { desplegable.classList.remove('abierto'); titulo.classList.remove('activo'); }
+        else { desplegable.classList.add('abierto'); titulo.classList.add('activo'); }
+
+        titulo.innerText = tituloFinal;
+        document.getElementById('texto-oracion').innerHTML = textoFinal;
+        document.getElementById('contador-display').innerText = `${pasoActual.cuenta} / ${pasoActual.total}`;
+        document.getElementById('texto-oracion').scrollTop = 0;
+        imgGuia.src = ilustracionFinal;
+
+        const btnNext = document.getElementById('btn-next');
+        btnNext.innerHTML = (pasoActual.tipoCuenta === 'rosa') ? SVG_ROSA : SVG_JAZPE;
+        
+        const btnPrev = document.getElementById('btn-prev');
+        if (indiceActual > 0) {
+            const pasoAnterior = pasos[indiceActual - 1];
+            btnPrev.innerHTML = (pasoAnterior.tipoCuenta === 'rosa') ? SVG_ROSA : SVG_JAZPE;
+            btnPrev.style.pointerEvents = 'auto';
+            btnPrev.style.opacity = '1';
+        } else {
+            btnPrev.innerHTML = '<img src="Imagenes/NSVMDLM.png" alt="Inicio">';
+            btnPrev.style.opacity = '1';
+            btnPrev.style.pointerEvents = 'none';
+        }
+
+const totalPasos = pasos.length;
+        const porcentaje = (indiceActual + 1) / totalPasos;
+        const fillHeight = Math.min(porcentaje * 74, 100);
+        const yStart = 87 - fillHeight;
+
+        const goldenRect = document.getElementById('golden-fill');
+        if (goldenRect) {
+            goldenRect.setAttribute('y', yStart.toString());
+            goldenRect.setAttribute('height', fillHeight.toString());
+        }
+
+        guardarProgreso();
+    }
+
+        function navegar(delta) {
+            let nuevoIndice = indiceActual + delta;
+            if (nuevoIndice < 0) return;
+if (nuevoIndice >= pasos.length) {
+    mostrarModalFinal();
+    localStorage.removeItem('progresoRosario');
+    indiceActual = 0;           // reiniciamos para la próxima vez
+    guardarProgreso();
+    return;
+            }
+            indiceActual = nuevoIndice;
+            actualizarUI();
+            window.scrollTo(0, 0);
+        }
+// Mostrar modal final bonito
+function mostrarModalFinal() {
+    const modal = document.getElementById('modal-final');
+    const svgContainer = document.getElementById('ramo-flores');
+    
+    // SVG de ramo de flores hermoso (rosas, lirios y brillo)
+    svgContainer.innerHTML = `
+        <g>
+            <circle cx="100" cy="100" r="85" fill="none" stroke="#D4AF37" stroke-width="8" stroke-opacity="0.15"/>
+            
+            <path d="M65 75 Q50 45 80 35 Q95 55 85 80 Z" fill="#ff99cc"/>
+            <path d="M130 70 Q155 40 175 60 Q150 85 135 75 Z" fill="#ff77aa"/>
+            <path d="M85 120 Q60 145 45 125 Q70 105 90 115 Z" fill="#ff6699"/>
+            <path d="M120 125 Q145 150 165 130 Q140 110 115 120 Z" fill="#ff88bb"/>
+            
+            <circle cx="72" cy="58" r="12" fill="#ffe066"/>
+            <circle cx="145" cy="62" r="11" fill="#ffe066"/>
+            <circle cx="65" cy="125" r="10" fill="#ffe066"/>
+            <circle cx="145" cy="128" r="11" fill="#ffe066"/>
+            
+            <path d="M95 40 Q88 20 105 25" fill="none" stroke="#f8f1d9" stroke-width="18" stroke-linecap="round"/>
+            <path d="M105 38 Q118 18 130 28" fill="none" stroke="#f8f1d9" stroke-width="16" stroke-linecap="round"/>
+            
+            <path d="M55 90 Q35 75 45 55" fill="none" stroke="#8fbc8f" stroke-width="14" stroke-linecap="round" opacity="0.7"/>
+            <path d="M145 95 Q170 78 155 55" fill="none" stroke="#8fbc8f" stroke-width="13" stroke-linecap="round" opacity="0.7"/>
+            
+            <circle cx="100" cy="100" r="45" fill="none" stroke="#FCF6BA" stroke-width="25" stroke-opacity="0.25"/>
+            
+            <circle cx="45" cy="85" r="6" fill="#ffccdd"/>
+            <circle cx="160" cy="85" r="5" fill="#ffccdd"/>
+            <circle cx="80" cy="155" r="7" fill="#ffbbcc"/>
+            <circle cx="125" cy="45" r="4" fill="#ffbbcc"/>
+        </g>
+        
+        <animate attributeName="opacity" values="0.85;1;0.85" dur="4s" repeatCount="indefinite"/>
+    `;
+
+    modal.style.display = 'flex';
+    
+    // Pequeña animación de entrada
+    setTimeout(() => {
+        modal.style.opacity = '1';
+    }, 10);
+}
+
+// Cerrar modal final
+function cerrarModalFinal() {
+    const modal = document.getElementById('modal-final');
+    modal.style.display = 'none';
+    // Reiniciar el rosario automáticamente al cerrar
+    cargarRosario();
+}
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('menu-misterios');
+            if (menu && !menu.contains(e.target) && e.target.tagName !== 'H1') { menu.style.display = 'none'; }
+        });
+
+        if (!recuperarProgreso()) { cargarRosario(); }
+cargarTriggersVoz();
+    </script>
+</body>
+</html>
