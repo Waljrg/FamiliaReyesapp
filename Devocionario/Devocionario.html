@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Oraciones - Fe, Tradición y Honor</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a0026">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        purpura: {
+                            base: '#5a0078',
+                            oscuro: '#1a0026',
+                        },
+                        oro: {
+                            base: '#D4AF37',
+                            brillante: '#FCF6BA',
+                            oscuro: '#8a6d3b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none;
+            background-color: #1a0026;
+            background-image: radial-gradient(circle at center, rgba(120, 0, 160, 0.2) 0%, rgba(26, 0, 38, 1) 100%);
+        }
+        
+        .view {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .view.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .btn-oro-custom {
+            position: relative;
+            text-decoration: none;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: rgba(90, 0, 120, 0.85); 
+            text-shadow: 1px 1px 1px rgba(255,255,255,0.3);
+            background: linear-gradient(145deg, #BF953F, #FCF6BA, #B38728, #AA771C);
+            border: 1px solid #8a6d3b;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .btn-oro-custom:active {
+            transform: scale(0.95);
+            filter: brightness(1.2);
+        }
+
+        .gold-text {
+            background: linear-gradient(90deg, #8a6d3b 0%, #f7e8ad 25%, #b8860b 50%, #f7e8ad 75%, #8a6d3b 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: goldShine 6s linear infinite;
+        }
+
+        @keyframes goldShine { to { background-position: 200% center; } }
+
+        .card-oracion {
+            background: rgba(90, 0, 120, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .divider-oro {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #BF953F, #FCF6BA, #B38728, transparent);
+        }
+
+        #editor-container {
+            height: 300px;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        .ql-toolbar.ql-snow {
+            background: #eee;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .ql-editor.ql-blank::before { color: rgba(255,255,255,0.3) !important; }
+
+        .modal-overlay {
+            background: rgba(26, 0, 38, 0.8);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="text-white antialiased">
+
+    <div class="max-w-md mx-auto min-h-screen relative overflow-hidden flex flex-col">
+
+        <div id="view-categories" class="view active flex-grow">
+            <header class="p-8 pt-12 text-center">
+                <img src="logo_fr.png" alt="Logo" class="w-20 mx-auto mb-4 drop-shadow-lg">
+                <h1 onclick="showEditorView()" class="text-4xl font-serif gold-text font-bold cursor-pointer hover:opacity-80 transition-opacity">Devocionario</h1>
+                <p class="text-xs uppercase tracking-[0.4em] text-oro-base font-semibold mt-2">FAMILIA REYES</p>
+                <div class="divider-oro mt-6 w-3/4 mx-auto"></div>
+            </header>
+            <div class="p-6 grid grid-cols-2 gap-4 pb-12" id="categories-grid"></div>
+        </div>
+
+        <div id="view-list" class="view flex-grow">
+            <header class="sticky top-0 bg-purpura-oscuro/95 backdrop-blur-md p-4 border-b border-oro-oscuro/30 flex items-center z-20">
+                <button onclick="showCategoriesView()" class="p-2 rounded-full text-oro-base hover:bg-purpura-base/30 mr-2 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                </button>
+                <h2 id="current-category-title" class="text-lg font-serif font-bold text-oro-base uppercase tracking-widest">Categoría</h2>
+            </header>
+            <div id="oraciones-list-container" class="p-6 space-y-3 pb-20"></div>
+        </div>
+
+        <div id="view-detail" class="view flex-grow">
+            <header class="sticky top-0 bg-purpura-oscuro/95 backdrop-blur-md p-4 border-b border-oro-oscuro/30 flex items-center z-20">
+                <button id="btn-back-to-list" class="p-2 rounded-full text-oro-base hover:bg-purpura-base/30 mr-2 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                </button>
+                <h2 id="detail-title" class="text-lg font-serif font-bold text-oro-base uppercase tracking-widest truncate">Oración</h2>
+            </header>
+            <div class="p-6 pb-20">
+                <div class="card-oracion p-8 rounded-2xl shadow-2xl border border-oro-oscuro/20">
+                    <div id="detail-content" class="text-gray-100 leading-relaxed font-light italic ql-editor p-0"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-editor" class="view flex-grow">
+            <header class="p-4 border-b border-oro-oscuro/30 flex items-center bg-purpura-oscuro/95">
+                <button onclick="showCategoriesView()" class="p-2 rounded-full text-oro-base mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                </button>
+                <h2 id="editor-view-title" class="text-lg font-serif font-bold text-oro-base uppercase">Nueva Oración</h2>
+            </header>
+            
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="text-[10px] uppercase tracking-widest text-oro-base font-bold ml-1">Título de la Oración</label>
+                    <input type="text" id="editor-titulo" placeholder="Ej: Ave María..." 
+                           class="w-full bg-white/5 border border-oro-base/30 rounded-xl p-3 mt-1 focus:outline-none focus:border-oro-base text-white font-serif">
+                </div>
+                
+                <div>
+                    <label class="text-[10px] uppercase tracking-widest text-oro-base font-bold ml-1">Contenido</label>
+                    <div id="editor-container" class="mt-1"></div>
+                </div>
+
+                <div class="flex flex-col gap-3 pt-2">
+                    <button id="btn-save-final" onclick="openCategoryModal()" class="btn-oro-custom w-full py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm">
+                        Guardar Oración
+                    </button>
+                    <button onclick="showCategoriesView()" class="w-full py-3 rounded-xl border border-white/10 text-white/40 uppercase tracking-widest text-[10px] font-bold">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-category" class="fixed inset-0 z-[100] hidden items-center justify-center p-6 modal-overlay">
+        <div class="bg-purpura-oscuro border border-oro-base/50 w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl">
+            <div class="p-6 border-b border-oro-base/20 bg-purpura-base/20">
+                <h3 class="text-oro-base font-serif text-xl text-center font-bold uppercase tracking-wider">Seleccionar Categoría</h3>
+            </div>
+            <div class="max-h-[60vh] overflow-y-auto p-4 grid grid-cols-1 gap-2" id="modal-cat-list"></div>
+            <div class="p-4 bg-black/20 text-center">
+                <button onclick="closeCategoryModal()" class="text-white/50 text-xs uppercase tracking-widest font-bold">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-actions" class="fixed inset-0 z-[110] hidden items-center justify-center p-6 modal-overlay">
+        <div class="bg-purpura-oscuro border border-oro-base/50 w-full max-w-xs rounded-3xl overflow-hidden shadow-2xl">
+            <div class="p-6 text-center">
+                <h3 id="action-target-title" class="text-oro-base font-serif text-lg mb-6 truncate">Oración</h3>
+                <div class="flex flex-col gap-3">
+                    <button id="btn-action-edit" class="btn-oro-custom py-3 rounded-xl uppercase text-xs tracking-widest">Editar Oración</button>
+                    <button id="btn-action-delete-prompt" onclick="showConfirmDelete()" class="bg-red-900/40 border border-red-500/50 text-red-200 py-3 rounded-xl uppercase text-xs tracking-widest font-bold">Borrar Oración</button>
+                    <button onclick="closeActionsModal()" class="text-white/40 text-[10px] uppercase mt-2 tracking-widest">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-confirm-delete" class="fixed inset-0 z-[120] hidden items-center justify-center p-6 modal-overlay">
+        <div class="bg-purpura-oscuro border border-red-500/50 w-full max-w-xs rounded-3xl overflow-hidden shadow-2xl">
+            <div class="p-6 text-center">
+                <div class="w-12 h-12 rounded-full border border-red-500/50 flex items-center justify-center mx-auto mb-4 bg-red-500/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#fecaca" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                    </svg>
+                </div>
+                <h3 class="text-oro-base font-serif text-lg mb-2">¿Estás seguro?</h3>
+                <p class="text-white/60 text-xs mb-6 px-4">Esta acción eliminará la oración permanentemente de la red Familia Reyes.</p>
+                <div class="flex flex-col gap-2">
+                    <button id="btn-final-delete" class="bg-red-600 text-white py-3 rounded-xl uppercase text-xs tracking-widest font-bold shadow-lg">Eliminar Ahora</button>
+                    <button onclick="closeConfirmDelete()" class="py-3 text-white/40 text-[10px] uppercase tracking-widest">Mantener Oración</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCRUwA2b31CsILBAmRhTRQ7xqE8aqb2_lM",
+            authDomain: "familia-reyess.firebaseapp.com",
+            databaseURL: "https://familia-reyess-default-rtdb.firebaseio.com",
+            projectId: "familia-reyess",
+            storageBucket: "familia-reyess.firebasestorage.app",
+            messagingSenderId: "109313819653",
+            appId: "1:109313819653:web:bc46b01f69dfa3e690886c",
+            measurementId: "G-NKWGWPGRTT"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        if(!localStorage.getItem('fr_uid')) {
+            localStorage.setItem('fr_uid', 'user_' + Math.random().toString(36).substr(2, 9));
+        }
+        const myUid = localStorage.getItem('fr_uid');
+
+        let quill;
+        let oracionesCloud = [];
+        let editingId = null;
+        let targetOraToDelete = null;
+
+        const categories = [
+            { id: 'manana', name: 'Mañana' }, { id: 'tarde', name: 'Tarde' }, { id: 'noche', name: 'Noche' },
+            { id: 'trinidad', name: 'Santísima Trinidad' }, { id: 'padre', name: 'Padre' }, { id: 'jesus', name: 'Jesús' },
+            { id: 'espiritu', name: 'Espíritu Santo' }, { id: 'sacramento', name: 'Santísimo Sacramento' },
+            { id: 'misericordia', name: 'Divina Misericordia' }, { id: 'maria', name: 'Virgen María' },
+            { id: 'latin', name: 'Latín' }, { id: 'otras', name: 'Otras' }
+        ];
+
+        window.showCategoriesView = function() {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-categories').classList.add('active');
+            editingId = null;
+        }
+
+        window.showEditorView = function(existingData = null) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-editor').classList.add('active');
+            initQuill();
+            const titleEl = document.getElementById('editor-view-title');
+            const inputEl = document.getElementById('editor-titulo');
+            const btnEl = document.getElementById('btn-save-final');
+            if(existingData) {
+                editingId = existingData.id;
+                titleEl.innerText = "Editar Oración";
+                inputEl.value = existingData.titulo;
+                quill.root.innerHTML = existingData.texto;
+                btnEl.innerText = "Actualizar Cambios";
+            } else {
+                editingId = null;
+                titleEl.innerText = "Nueva Oración";
+                inputEl.value = '';
+                quill.root.innerHTML = '';
+                btnEl.innerText = "Guardar Oración";
+            }
+        }
+
+        const q = query(collection(db, "oraciones"), orderBy("fecha", "desc"));
+        onSnapshot(q, (snapshot) => {
+            oracionesCloud = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderCategories();
+        });
+
+        function countOraciones(catId) { return oracionesCloud.filter(o => o.cat === catId).length; }
+
+        window.renderCategories = function() {
+            const grid = document.getElementById('categories-grid');
+            if(!grid) return; grid.innerHTML = '';
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = "btn-oro-custom flex flex-col items-center justify-center text-center p-5 rounded-xl transition-all duration-300";
+                btn.onclick = () => showOracionesView(cat.id);
+                btn.innerHTML = `<h3 class="font-serif font-bold text-xs leading-tight uppercase tracking-tighter">${cat.name}</h3>
+                                 <p class="text-[9px] uppercase tracking-widest text-purpura-base opacity-70 mt-2 font-bold">${countOraciones(cat.id)} items</p>`;
+                grid.appendChild(btn);
+            });
+        }
+
+        window.showOracionesView = function(catId) {
+            const category = categories.find(c => c.id === catId);
+            if (!category) return;
+            document.getElementById('current-category-title').innerText = category.name;
+            const container = document.getElementById('oraciones-list-container');
+            container.innerHTML = '';
+            const filtradas = oracionesCloud.filter(o => o.cat === catId);
+            if (filtradas.length === 0) {
+                container.innerHTML = `<div class="text-center py-20"><p class="text-oro-base/50 font-serif italic">Sin oraciones.</p></div>`;
+            } else {
+                filtradas.forEach(ora => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full text-left card-oracion p-4 rounded-xl border border-oro-oscuro/20 flex justify-between items-center group active:scale-[0.98] transition-transform select-none";
+                    let timer;
+                    btn.ontouchstart = () => timer = setTimeout(() => handleLongPress(ora), 600);
+                    btn.ontouchend = () => clearTimeout(timer);
+                    btn.onmousedown = () => timer = setTimeout(() => handleLongPress(ora), 600);
+                    btn.onmouseup = () => clearTimeout(timer);
+                    btn.onclick = (e) => { if (e.detail === 1) showDetailView(ora, catId); };
+                    btn.innerHTML = `<span class="text-oro-base font-serif font-bold tracking-wide">${ora.titulo}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-oro-base/50"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>`;
+                    container.appendChild(btn);
+                });
+            }
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-list').classList.add('active');
+        }
+
+        function handleLongPress(ora) {
+            if(ora.owner !== myUid) return;
+            targetOraToDelete = ora;
+            document.getElementById('action-target-title').innerText = ora.titulo;
+            document.getElementById('modal-actions').classList.replace('hidden', 'flex');
+            document.getElementById('btn-action-edit').onclick = () => { closeActionsModal(); showEditorView(ora); };
+        }
+
+        window.showConfirmDelete = function() {
+            document.getElementById('modal-actions').classList.replace('flex', 'hidden');
+            document.getElementById('modal-confirm-delete').classList.replace('hidden', 'flex');
+            document.getElementById('btn-final-delete').onclick = async () => {
+                await deleteDoc(doc(db, "oraciones", targetOraToDelete.id));
+                closeConfirmDelete();
+                showCategoriesView();
+            };
+        }
+
+        window.closeConfirmDelete = function() {
+            document.getElementById('modal-confirm-delete').classList.replace('flex', 'hidden');
+            targetOraToDelete = null;
+        }
+
+        window.closeActionsModal = function() {
+            document.getElementById('modal-actions').classList.replace('flex', 'hidden');
+        }
+
+        window.showDetailView = function(ora, catId) {
+            document.getElementById('detail-title').innerText = ora.titulo;
+            document.getElementById('detail-content').innerHTML = ora.texto;
+            document.getElementById('btn-back-to-list').onclick = () => showOracionesView(catId);
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-detail').classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function initQuill() {
+            if(!quill) {
+                quill = new Quill('#editor-container', {
+                    modules: { 
+                        toolbar: [
+                            ['bold', 'italic', 'underline'], 
+                            [{ 'color': [] }], 
+                            [{ 'align': [] }], 
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }], 
+                            ['clean']
+                        ] 
+                    },
+                    placeholder: 'Escribe la oración aquí...', 
+                    theme: 'snow'
+                });
+            }
+        }
+
+        window.openCategoryModal = function() {
+            const titulo = document.getElementById('editor-titulo').value;
+            if(!titulo) return alert("Por favor pon un título");
+            const list = document.getElementById('modal-cat-list');
+            list.innerHTML = '';
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = "flex items-center justify-center p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-oro-base/20 transition-all";
+                btn.onclick = () => saveOracion(cat.id);
+                btn.innerHTML = `<span class="font-serif text-white uppercase tracking-widest text-sm">${cat.name}</span>`;
+                list.appendChild(btn);
+            });
+            document.getElementById('modal-category').classList.replace('hidden', 'flex');
+        }
+
+        window.closeCategoryModal = function() { document.getElementById('modal-category').classList.replace('flex', 'hidden'); }
+
+        async function saveOracion(catId) {
+            const titulo = document.getElementById('editor-titulo').value;
+            const contenido = quill.root.innerHTML;
+            try {
+                if (editingId) {
+                    await updateDoc(doc(db, "oraciones", editingId), { cat: catId, titulo: titulo, texto: contenido, fechaActualizacion: serverTimestamp() });
+                } else {
+                    await addDoc(collection(db, "oraciones"), { cat: catId, titulo: titulo, texto: contenido, fecha: serverTimestamp(), owner: myUid });
+                }
+                document.getElementById('editor-titulo').value = '';
+                quill.setContents([]); editingId = null;
+                closeCategoryModal(); showCategoriesView();
+            } catch (error) { alert("Error al guardar."); }
+        }
+
+        renderCategories();
+    </script>
+</body>
+</html>
+
+
